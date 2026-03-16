@@ -164,7 +164,8 @@ def create_input_fields(num_fields):
         field_layout = [
             [sg.Text("", key=f"-L{i}-", font=("Arial", 10, "bold"), pad=((8, 5), (8, 2)))],
             [sg.Input(key=f"-I{i}-", size=(44, 1), pad=((8, 5), (0, 8)), visible=True),
-             sg.Combo([], key=f"-C{i}-", size=(43, 1), pad=((8, 5), (0, 8)), visible=False, readonly=True)]
+             sg.Combo([], key=f"-C{i}-", size=(43, 1), pad=((8, 5), (0, 8)), visible=False, readonly=True),
+             sg.Checkbox("Available", key=f"-CHK{i}-", pad=((8, 5), (0, 8)), visible=False)]
         ]
         inner.append([
             sg.Column(
@@ -310,10 +311,16 @@ def refresh_ui():
             if opts:
                 window[f"-I{i}-"].update(value="", visible=False)
                 window[f"-C{i}-"].update(values=opts, value=opts[0], visible=True)
+                window[f"-CHK{i}-"].update(visible=False)
+            elif current_cat == "Teachers" and i == 2:  # Availability checkbox
+                window[f"-I{i}-"].update(visible=False)
+                window[f"-C{i}-"].update(visible=False)
+                window[f"-CHK{i}-"].update(visible=True, value=True if edit_mode and data[selected_index][i] == '1' else False)
             else:
                 readonly = (current_cat == "Teachers" and i == 1)  # Expertise field
                 window[f"-I{i}-"].update(value="", visible=True, readonly=readonly)
                 window[f"-C{i}-"].update(visible=False)
+                window[f"-CHK{i}-"].update(visible=False)
         else:
             window[f"-COL{i}-"].update(visible=False)
 
@@ -334,6 +341,8 @@ def refresh_ui():
             opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             if opts:
                 window[f"-C{i}-"].update(value=row[i])
+            elif current_cat == "Teachers" and i == 2:
+                window[f"-CHK{i}-"].update(value=row[i] == '1')
             else:
                 window[f"-I{i}-"].update(value=row[i])
 
@@ -387,7 +396,12 @@ while True:
         for i in range(len(schema_fields)):
             label = schema_fields[i]
             opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
-            val = values[f"-C{i}-"] if opts else values[f"-I{i}-"]
+            if opts:
+                val = values[f"-C{i}-"]
+            elif current_cat == "Teachers" and i == 2:
+                val = '1' if values[f"-CHK{i}-"] else '0'
+            else:
+                val = values[f"-I{i}-"]
             row_data.append(val)
 
         if any(str(v).strip() for v in row_data):
@@ -454,7 +468,12 @@ while True:
         for i in range(len(schema_fields)):
             label = schema_fields[i]
             opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
-            val = values[f"-C{i}-"] if opts else values[f"-I{i}-"]
+            if opts:
+                val = values[f"-C{i}-"]
+            elif current_cat == "Teachers" and i == 2:
+                val = '1' if values[f"-CHK{i}-"] else '0'
+            else:
+                val = values[f"-I{i}-"]
             row_data.append(val)
 
         if any(str(v).strip() for v in row_data):
