@@ -2,5 +2,5 @@ subject,unit,day,start_time,end_time,room,modality,teacher
 ProgFund,2.0,Monday,7:30,9:00,Lab 1,f2f,Juan Santos
 NetSecLec,3.0,Monday,9:00,10:30,Lab 1,online,Alex Cruz
 SysDev,1.5,Monday,10:30,12:00,Lab 1,hyflex_a,Carlos Ramirez
-DatManLec,3.0,Monday,12:00,13:30,Lab 1,online,Bianca Reyes
-WebDev,2.0,Monday,13:30,15:00,Lab 1,hyflex_b,Jose Hernandez
+DatManLec,3.0,Tuesday,7:30,9:00,Lab 1,online,Bianca Reyes
+WebDev,2.0,Tuesday,9:00,10:30,Lab 1,hyflex_b,Jose Hernandez

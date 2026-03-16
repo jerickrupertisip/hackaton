@@ -173,13 +173,16 @@ def main():
 
 	# Helper: Get next available time slot for a section
 	def get_next_slot(section_schedule):
+		max_per_day = 3  # Allow up to 3 subjects per day for balanced distribution
 		for day in DAYS:
-			slots = [s['start_time'] for s in section_schedule if s['day'] == day]  # Now floats
-			t = START_HOUR
-			while t + SLOT_LENGTH <= END_HOUR:
-				if t not in slots:
-					return day, t
-				t += SLOT_LENGTH
+			day_subjects = [s for s in section_schedule if s['day'] == day]
+			if len(day_subjects) < max_per_day:
+				slots = [s['start_time'] for s in day_subjects]
+				t = START_HOUR
+				while t + SLOT_LENGTH <= END_HOUR:
+					if t not in slots:
+						return day, t
+					t += SLOT_LENGTH
 		return None, None
 
 	# Main scheduling loop
