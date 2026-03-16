@@ -49,6 +49,7 @@ raw_data_storage = {"Teachers": [], "Rooms": [], "Courses": {}, "Enrollment": {}
 TEACHERS_CSV = os.path.join(DATA_DIR, 'teachers.csv')
 ROOMS_CSV = os.path.join(DATA_DIR, 'rooms.csv')
 ENROLLMENT_DIR = os.path.join(DATA_DIR, 'enrollment')
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'output')
 
 def get_teachers_schema():
     with open(TEACHERS_CSV, newline='', encoding='utf-8') as f:
@@ -90,6 +91,24 @@ def get_options(field, category, course_code=None):
             return []
     # For Teachers/Rooms, no dropdowns by default
     return []
+
+def load_output_csv(course_code):
+    files = [f for f in os.listdir(OUTPUT_DIR) if f.upper().startswith(course_code.upper()) and f.endswith('.csv')]
+    if not files:
+        return [], []
+    # Assume all have same headers, take from first
+    path = os.path.join(OUTPUT_DIR, files[0])
+    with open(path, newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        headers = next(reader)
+    data = []
+    for file in files:
+        path = os.path.join(OUTPUT_DIR, file)
+        with open(path, newline='', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader)  # skip header
+            data.extend([row for row in reader if any(cell.strip() for cell in row)])
+    return headers, data
 
 # --- Internal Data Storage ---
 raw_data_storage = {"Teachers": [], "Rooms": [], "Courses": []}
@@ -210,7 +229,7 @@ def get_max_cols():
 MAX_COLS = get_max_cols()
 placeholder_headings = [" " * (i + 1) for i in range(MAX_COLS)]
 
-layout = [
+tab1_layout = [
     [sg.Text("Academic Scheduling System", font=("Arial", 16, "bold"))],
     [sg.Button("Manage Teachers"), sg.Button("Manage Rooms"),
      sg.Button("Manage Courses"), sg.Button("Manage Enrollment"),
@@ -250,6 +269,27 @@ layout = [
     [sg.HSeparator(pad=(0, 15))],
     [sg.Button("RUN SCHEDULER", size=(25, 2), button_color=("white", "#343a40")),
      sg.Push(), sg.Button("Exit", size=(10, 2))]
+]
+
+tab2_layout = [
+    [sg.Text("Output Visualization", font=("Arial", 16, "bold"))],
+    [sg.Combo(course_codes, default_course, key="-OUTPUT_COURSE_SELECT-", readonly=True, enable_events=True)],
+    [sg.Table(
+        values=[],
+        headings=placeholder_headings,
+        auto_size_columns=True,
+        num_rows=10,
+        key="-OUTPUT_TABLE-",
+        expand_x=True,
+        col_widths=[18] * MAX_COLS,
+        justification='left'
+    )]
+]
+
+layout = [
+    [sg.Button("Inputs", key="-TAB_BTN1-", button_color="blue"), sg.Button("Outputs", key="-TAB_BTN2-")],
+    [sg.Frame("Inputs", tab1_layout, visible=True, key="-TAB1-", expand_x=True, expand_y=True)],
+    [sg.Frame("Outputs", tab2_layout, visible=False, key="-TAB2-", expand_x=True, expand_y=True)]
 ]
 
 window = sg.Window("Academic Scheduler v2.0", layout, finalize=True)
@@ -361,6 +401,27 @@ raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code
 raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
 
 refresh_ui()
+
+# Initial output load
+headers, data = load_output_csv(default_course)
+num_cols = len(headers)
+padded_headings = headers + [" " * (i + 1) for i in range(MAX_COLS - num_cols)]
+padded_data = []
+for row in data:
+    padded_row = list(row) + [""] * (MAX_COLS - len(row))
+    padded_data.append(padded_row)
+window["-OUTPUT_TABLE-"].update(values=padded_data)
+try:
+    tv = window["-OUTPUT_TABLE-"].Widget
+    for i, heading in enumerate(padded_headings):
+        col_id = f"#{i + 1}"
+        tv.heading(col_id, text=heading)
+        if i >= num_cols:
+            tv.column(col_id, width=0, minwidth=0, stretch=False)
+        else:
+            tv.column(col_id, width=120, minwidth=40, stretch=True)
+except Exception:
+    pass
 
 while True:
     event, values = window.read()
@@ -521,5 +582,35 @@ while True:
             if course_code in raw_data_storage["Enrollment"]:
                 save_to_raw_csv("Enrollment", raw_data_storage["Enrollment"][course_code], course_code)
         sg.popup("All changes saved to CSVs.")
+
+    if event == "-OUTPUT_COURSE_SELECT-":
+        selected_course = values["-OUTPUT_COURSE_SELECT-"]
+        headers, data = load_output_csv(selected_course)
+        num_cols = len(headers)
+        padded_headings = headers + [" " * (i + 1) for i in range(MAX_COLS - num_cols)]
+        padded_data = []
+        for row in data:
+            padded_row = list(row) + [""] * (MAX_COLS - len(row))
+            padded_data.append(padded_row)
+        window["-OUTPUT_TABLE-"].update(values=padded_data)
+        try:
+            tv = window["-OUTPUT_TABLE-"].Widget
+            for i, heading in enumerate(padded_headings):
+                col_id = f"#{i + 1}"
+                tv.heading(col_id, text=heading)
+                if i >= num_cols:
+                    tv.column(col_id, width=0, minwidth=0, stretch=False)
+                else:
+                    tv.column(col_id, width=120, minwidth=40, stretch=True)
+        except Exception:
+            pass
+
+    if event == "-TAB_BTN1-":
+        window["-TAB1-"].update(visible=True)
+        window["-TAB2-"].update(visible=False)
+
+    if event == "-TAB_BTN2-":
+        window["-TAB1-"].update(visible=False)
+        window["-TAB2-"].update(visible=True)
 
 window.close()
