@@ -236,6 +236,8 @@ layout = [
 
     [sg.Frame("Entry Form", create_input_fields(MAX_COLS), border_width=1, expand_x=True, pad=(0, 20))],
 
+    [sg.Button("Select Subjects", key="-SELECT_SUBJECTS-", visible=False, button_color="#17a2b8")],
+
     [sg.Button("Add Record", button_color="#28a745", size=(15, 1)),
      sg.Button("Edit Selected", button_color="#ffc107", size=(15, 1)),
      sg.Button("Remove Selected", button_color="#dc3545", size=(15, 1)),
@@ -309,7 +311,8 @@ def refresh_ui():
                 window[f"-I{i}-"].update(value="", visible=False)
                 window[f"-C{i}-"].update(values=opts, value=opts[0], visible=True)
             else:
-                window[f"-I{i}-"].update(value="", visible=True)
+                readonly = (current_cat == "Teachers" and i == 1)  # Expertise field
+                window[f"-I{i}-"].update(value="", visible=True, readonly=readonly)
                 window[f"-C{i}-"].update(visible=False)
         else:
             window[f"-COL{i}-"].update(visible=False)
@@ -321,6 +324,7 @@ def refresh_ui():
     window["Cancel"].update(visible=edit_mode)
     window["Confirm"].update(visible=edit_mode)
     window["SAVE TO CSV"].update(visible=not edit_mode)
+    window["-SELECT_SUBJECTS-"].update(visible=current_cat == "Teachers")
 
     # --- Populate form if in edit mode ---
     if edit_mode and selected_index is not None and selected_index < len(data):
@@ -410,6 +414,31 @@ while True:
             edit_mode = True
             selected_index = selected[0]
             refresh_ui()
+
+    if event == "-SELECT_SUBJECTS-":
+        all_subjects = sorted(get_field_options("subject"))
+        current_expertise = values.get("-I1-", "").strip()
+        if current_expertise:
+            pre_selected = [s.strip() for s in current_expertise.split(",")]
+        else:
+            pre_selected = []
+        layout_subjects = [
+            [sg.Text("Select Subjects for Expertise:")],
+            [sg.Listbox(all_subjects, size=(50, 10), select_mode='multiple', key='-SUBJECT_LIST-', default_values=pre_selected)],
+            [sg.Button("OK"), sg.Button("Cancel")]
+        ]
+        subject_window = sg.Window("Select Subjects", layout_subjects, modal=True)
+        while True:
+            event_sub, values_sub = subject_window.read()
+            if event_sub in (sg.WIN_CLOSED, "Cancel"):
+                break
+            if event_sub == "OK":
+                selected_subjects = values_sub['-SUBJECT_LIST-']
+                if selected_subjects:
+                    expertise_str = ", ".join(selected_subjects)
+                    window["-I1-"].update(value=expertise_str)
+                break
+        subject_window.close()
 
     if event == "Cancel":
         edit_mode = False

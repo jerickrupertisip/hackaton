@@ -1,55 +1,55 @@
 teacher,expertise,availability
-"Juan Santos","ProgFund, SoftEng, AdvProg, BigData",1
-"Maria DelaCruz","NetSec, CompArch, CyberSec",1
-"Carlos Ramirez","SysDev, CloudComp, IoTSystems",1
-"Ana Villanueva","DatMan, AIIntro, UXDesign, DataAnalytics",1
-"Jose Hernandez","WebDev, ITProjMgmt, MobileDev, ITStrategy",1
-"Luis Bautista","OSFund",1
-"Pedro Cruz","FinMgmt, EntLaw, BusEthics",1
-"Rosa Reyes","BusComm, MarkStrat, EcoTheory",1
-"Miguel Mendoza","AcctFund, AdvAcct, CostAcc",1
-"Elena Garcia","MarkIntro, HRMgmt, Investments",1
-"Laura Lopez","EntPlan, InnMgmt, MarketRes, GrowthStrat",1
-"Diego Castillo","BusMod, StartOps, ProdDev, SupplyChain",1
-"Sofia Navarro","VentCap, SalesStrat, InnovationLab",1
-"Antonio Aquino","AccSys, Auditing, GovAcc, BusLaw",1
-"Ricardo Ramos","FinAcc, Taxation, CorpAcc, MgmtAcc",1
-"Isabel Flores","ChildDev, EduPsy, DataCommLec, FinAccLec, CorpAccLec, TaxationLec, AcctInfoSys, IntAuditingLec, AcctTheoryLec, FinReportingLec, AcctAnalysis",1
-"Alex Cruz","NetSecLec, CompArch, CyberSec",1
-"Miguel Mendoza","AcctFund, AdvAcct, CostAcc, FinAccLec, AcctInfoSys, AdvFinAcc, AcctTheoryLec, AcctAnalysis",1
-"Antonio Aquino","AccSys, Auditing, GovAcc, BusLaw, Auditing, IntAuditingLec, ForensicAcc, AcctResearch",1
-"Bianca Reyes","DatManLec, DataAnalyticsLec, AIIntro",1
-"Carlos Lim","OSFundLec, OSFund, CompArch, BusLawLec",1
-"Diana Tan","CloudCompLec, IoTSystemsLec, SysDev",1
-"Erik Yu","MobileDevLec, WebDev, ITProjMgmt",1
-"Fiona Lee","LangLitLec, ReadWriteLec, EarlyLit, IntlAccLec",1
-"Gino Ramos","EduTech, InstrDesign, CompEdLec",1
-"Hannah Ong","SocStuLec, ValuesEd, PhilEdu",1
-"Ivan delaPaz","MathEd, SciEd, ArtEd, EthicsAcc, TaxPlanning",1
-"Julia Santos","MusicEdLec, PEdLec, SpecEdLec",1
-"Kurt Chua","CurrDev, ClassMgmtLec, AssessLearn",1
-"Lara Gomez","EduResLec, TeachPrac, AdvTeachMeth, EduPsych",1
-"Nina Ramos","FinAccLec, AdvFinAcc, AcctTheoryLec, FinReportingLec",1
-"Oscar Lim","CorpAccLec, IntlAccLec, AcctInfoSys, AcctAnalysis",1
-"Paula Tan","TaxationLec, TaxPlanning, EthicsAcc, AcctResearch",1
-"Quinn Yu","IntAuditingLec, Auditing, ForensicAcc, GovAcc",1
-"Rico Cruz","BusLawLec, BusLaw, MgmtAcc, AcctFund",1
-"Sara Lee","MarkIntroLec, MarkStratLec, BusCommLec, HRMgmt",1
-"Tina Ong","EcoTheoryLec, OrgBeh, BusEthics, FinMgmt",1
-"Ulysses delaPaz","CorpFin, StratMgmtLec, IntlBus, OpsMgmtLec",1
-"Vera Santos","BusRes, AdvAcct, InvestmentsLec, BusPol",1
-"Wendy Gomez","EntreMgmtLec, LeadDev, EntPlan, MarketRes",1
-"Xander Chua","BusModLec, StartOps, InnMgmtLec, VentCap",1
-"Yara Navarro","FinStartupLec, ProdDev, EntLawLec, SalesStrat",1
-"Zane Castillo","GrowthStrat, EntFinanceLec, SupplyChain, GlobalEntLec",1
-"Ariel Ramos","InnovationLab, SocialEnt, RiskMgmtLec, EntLeadership",1
-"Bela Reyes","DigitalEntLec, Negotiation, ChildDev, LangLitLec",1
-"Cesar Lim","EduTech, SocStuLec, MathEd, SciEd",1
-"Daisy Tan","MusicEdLec, ArtEd, PEdLec, ValuesEd",1
-"Eli Yu","CurrDev, ClassMgmtLec, AssessLearn, ReadWriteLec",1
-"Faith Lee","EarlyLit, SpecEdLec, InstrDesign, EduResLec",1
-"Gail Ong","TeachPrac, EduPsy, TeachMethLec, CurrDes",1
-"Hugo delaPaz","AssEvalLec, SpecSubj, PhilEdu, CompEdLec",1
-"Ivy Santos","InstrTech, ResMeth, AdvTeachMeth, SchoolAdmin",1
-"Jude Gomez","CurrEvalLec, EduPolicy, InclusiveEd, EduLeadershipLec",1
-"Kara Chua","AssessTools, InstrStratLec, BusMod, StartOps",1
+Juan Santos,"ProgFund, SoftEng, AdvProg, BigData",1
+Maria DelaCruz,"AcctResearch, CompArch, CyberSec, EduResLec, OpsMgmtLec, OrgBeh",1
+Carlos Ramirez,"SysDev, CloudComp, IoTSystems",1
+Ana Villanueva,"DatMan, AIIntro, UXDesign, DataAnalytics",1
+Jose Hernandez,"WebDev, ITProjMgmt, MobileDev, ITStrategy",1
+Luis Bautista,OSFund,1
+Pedro Cruz,"FinMgmt, EntLaw, BusEthics",1
+Rosa Reyes,"BusComm, MarkStrat, EcoTheory",1
+Miguel Mendoza,"AcctFund, AdvAcct, CostAcc",1
+Elena Garcia,"MarkIntro, HRMgmt, Investments",1
+Laura Lopez,"EntPlan, InnMgmt, MarketRes, GrowthStrat",1
+Diego Castillo,"BusMod, StartOps, ProdDev, SupplyChain",1
+Sofia Navarro,"VentCap, SalesStrat, InnovationLab",1
+Antonio Aquino,"AccSys, Auditing, GovAcc, BusLaw",1
+Ricardo Ramos,"FinAcc, Taxation, CorpAcc, MgmtAcc",1
+Isabel Flores,"ChildDev, EduPsy, DataCommLec, FinAccLec, CorpAccLec, TaxationLec, AcctInfoSys, IntAuditingLec, AcctTheoryLec, FinReportingLec, AcctAnalysis",1
+Alex Cruz,"NetSecLec, CompArch, CyberSec",1
+Miguel Mendoza,"AcctFund, AdvAcct, CostAcc, FinAccLec, AcctInfoSys, AdvFinAcc, AcctTheoryLec, AcctAnalysis",1
+Antonio Aquino,"AccSys, Auditing, GovAcc, BusLaw, Auditing, IntAuditingLec, ForensicAcc, AcctResearch",1
+Bianca Reyes,"DatManLec, DataAnalyticsLec, AIIntro",1
+Carlos Lim,"OSFundLec, OSFund, CompArch, BusLawLec",1
+Diana Tan,"CloudCompLec, IoTSystemsLec, SysDev",1
+Erik Yu,"MobileDevLec, WebDev, ITProjMgmt",1
+Fiona Lee,"LangLitLec, ReadWriteLec, EarlyLit, IntlAccLec",1
+Gino Ramos,"EduTech, InstrDesign, CompEdLec",1
+Hannah Ong,"SocStuLec, ValuesEd, PhilEdu",1
+Ivan delaPaz,"MathEd, SciEd, ArtEd, EthicsAcc, TaxPlanning",1
+Julia Santos,"MusicEdLec, PEdLec, SpecEdLec",1
+Kurt Chua,"CurrDev, ClassMgmtLec, AssessLearn",1
+Lara Gomez,"EduResLec, TeachPrac, AdvTeachMeth, EduPsych",1
+Nina Ramos,"FinAccLec, AdvFinAcc, AcctTheoryLec, FinReportingLec",1
+Oscar Lim,"CorpAccLec, IntlAccLec, AcctInfoSys, AcctAnalysis",1
+Paula Tan,"TaxationLec, TaxPlanning, EthicsAcc, AcctResearch",1
+Quinn Yu,"IntAuditingLec, Auditing, ForensicAcc, GovAcc",1
+Rico Cruz,"BusLawLec, BusLaw, MgmtAcc, AcctFund",1
+Sara Lee,"MarkIntroLec, MarkStratLec, BusCommLec, HRMgmt",1
+Tina Ong,"EcoTheoryLec, OrgBeh, BusEthics, FinMgmt",1
+Ulysses delaPaz,"CorpFin, StratMgmtLec, IntlBus, OpsMgmtLec",1
+Vera Santos,"BusRes, AdvAcct, InvestmentsLec, BusPol",1
+Wendy Gomez,"EntreMgmtLec, LeadDev, EntPlan, MarketRes",1
+Xander Chua,"BusModLec, StartOps, InnMgmtLec, VentCap",1
+Yara Navarro,"FinStartupLec, ProdDev, EntLawLec, SalesStrat",1
+Zane Castillo,"GrowthStrat, EntFinanceLec, SupplyChain, GlobalEntLec",1
+Ariel Ramos,"InnovationLab, SocialEnt, RiskMgmtLec, EntLeadership",1
+Bela Reyes,"DigitalEntLec, Negotiation, ChildDev, LangLitLec",1
+Cesar Lim,"EduTech, SocStuLec, MathEd, SciEd",1
+Daisy Tan,"MusicEdLec, ArtEd, PEdLec, ValuesEd",1
+Eli Yu,"CurrDev, ClassMgmtLec, AssessLearn, ReadWriteLec",1
+Faith Lee,"EarlyLit, SpecEdLec, InstrDesign, EduResLec",1
+Gail Ong,"TeachPrac, EduPsy, TeachMethLec, CurrDes",1
+Hugo delaPaz,"AssEvalLec, SpecSubj, PhilEdu, CompEdLec",1
+Ivy Santos,"InstrTech, ResMeth, AdvTeachMeth, SchoolAdmin",1
+Jude Gomez,"CurrEvalLec, EduPolicy, InclusiveEd, EduLeadershipLec",1
+Kara Chua,"AssessTools, InstrStratLec, BusMod, StartOps",1
