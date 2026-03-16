@@ -14,10 +14,11 @@ class Room:
 		self.floor = int(floor)
 
 class Teacher:
-	def __init__(self, name, expertise, availability=None):
+	def __init__(self, name, expertise, availability=1):
 		self.name = name
 		self.expertise = [e.strip() for e in expertise.split(',')]
-		self.availability = availability or []  # List of (Day, StartTime, EndTime)
+		# Availability is now a boolean (1: available, 0: not available)
+		self.available = bool(int(availability))
 
 class Subject:
 	def __init__(self, subject, year, semester, units, preferred_room, modality):
@@ -52,7 +53,7 @@ def parse_teachers_csv(path: str) -> Dict[str, Teacher]:
 	with open(path, newline='', encoding='utf-8') as f:
 		reader = csv.DictReader(f)
 		for row in reader:
-			teacher = Teacher(row['teacher'], row['expertise'], row.get('availability', ''))
+			teacher = Teacher(row['teacher'], row['expertise'], row.get('availability', '1'))
 			teachers[teacher.name] = teacher
 	return teachers
 
@@ -93,6 +94,14 @@ def validate_csvs(rooms, teachers, courses, enrollments):
 		for subj in subjects:
 			if subj.units not in [1.5, 2, 3]:
 				raise ValueError(f"Subject {subj.subject} in {course} has invalid units: {subj.units}")
+			# Check if at least one available teacher can teach this subject
+			found = False
+			for t in teachers.values():
+				if t.available and subj.subject in t.expertise:
+					found = True
+					break
+			if not found:
+				raise ValueError(f"No available teacher for subject {subj.subject} in course {course}.")
 	# Enrollment check
 	for course, enr in enrollments.items():
 		for e in enr:
@@ -148,6 +157,8 @@ def main():
 	# Helper: Find available teacher for subject
 	def find_teacher(subject, teachers, used_teachers, day, start_time):
 		for t in teachers.values():
+			if not t.available:
+				continue
 			if subject.subject in t.expertise and (t.name, day, start_time) not in used_teachers:
 				return t.name
 		return None
