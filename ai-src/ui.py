@@ -237,7 +237,10 @@ layout = [
     [sg.Frame("Entry Form", create_input_fields(MAX_COLS), border_width=1, expand_x=True, pad=(0, 20))],
 
     [sg.Button("Add Record", button_color="#28a745", size=(15, 1)),
+     sg.Button("Edit Selected", button_color="#ffc107", size=(15, 1)),
      sg.Button("Remove Selected", button_color="#dc3545", size=(15, 1)),
+     sg.Button("Cancel", button_color="#6c757d", size=(10, 1), visible=False),
+     sg.Button("Confirm", button_color="#007bff", size=(10, 1), visible=False),
      sg.Push(),
      sg.Button("SAVE TO CSV", size=(15, 1), button_color="#007bff")],
 
@@ -248,12 +251,16 @@ layout = [
 
 window = sg.Window("Academic Scheduler v2.0", layout, finalize=True)
 
+# --- Edit Mode State ---
+edit_mode = False
+selected_index = None
+
 
 
 def refresh_ui():
     window["-CAT_DISPLAY-"].update(current_cat)
     window["-COURSE_DISPLAY-"].update(f"({current_course})" if current_cat in ["Courses", "Enrollment"] else "")
-    window["-COURSE_SELECT-"].update(visible=current_cat in ["Courses", "Enrollment"])
+    window["-COURSE_SELECT-"].update(visible=current_cat in ["Courses", "Enrollment"], disabled=edit_mode)
 
     # --- Update table headings and data ---
     if current_cat in ["Courses", "Enrollment"]:
@@ -307,6 +314,25 @@ def refresh_ui():
         else:
             window[f"-COL{i}-"].update(visible=False)
 
+    # --- Update button visibility based on edit mode ---
+    window["Add Record"].update(visible=not edit_mode)
+    window["Edit Selected"].update(visible=not edit_mode)
+    window["Remove Selected"].update(visible=not edit_mode)
+    window["Cancel"].update(visible=edit_mode)
+    window["Confirm"].update(visible=edit_mode)
+    window["SAVE TO CSV"].update(visible=not edit_mode)
+
+    # --- Populate form if in edit mode ---
+    if edit_mode and selected_index is not None and selected_index < len(data):
+        row = data[selected_index]
+        for i in range(len(current_labels)):
+            label_text = current_labels[i]
+            opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
+            if opts:
+                window[f"-C{i}-"].update(value=row[i])
+            else:
+                window[f"-I{i}-"].update(value=row[i])
+
     # Force the scrollable canvas to recompute its scroll region
     try:
         canvas = window["-FORM-SCROLL-"].Widget.canvas
@@ -331,10 +357,12 @@ while True:
 
     if event in ["Manage Teachers", "Manage Rooms", "Manage Courses", "Manage Enrollment"]:
         current_cat = event.split(" ")[1]
+        edit_mode = False
+        selected_index = None
         refresh_ui()
 
     if event == "-COURSE_SELECT-":
-        if current_cat in ["Courses", "Enrollment"]:
+        if current_cat in ["Courses", "Enrollment"] and not edit_mode:
             current_course = values["-COURSE_SELECT-"]
             refresh_ui()
 
@@ -374,7 +402,49 @@ while True:
         else:
             sg.popup_error("Fields are empty!")
 
-    if event == "Remove Selected":
+    if event == "Edit Selected":
+        selected = values["-TABLE-"]
+        if not selected:
+            sg.popup_error("No row selected!")
+        else:
+            edit_mode = True
+            selected_index = selected[0]
+            refresh_ui()
+
+    if event == "Cancel":
+        edit_mode = False
+        selected_index = None
+        refresh_ui()
+
+    if event == "Confirm":
+        if current_cat in ["Courses", "Enrollment"]:
+            schema_fields = get_schema(current_cat, current_course)
+        else:
+            schema_fields = get_schema(current_cat)
+        row_data = []
+        for i in range(len(schema_fields)):
+            label = schema_fields[i]
+            opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
+            val = values[f"-C{i}-"] if opts else values[f"-I{i}-"]
+            row_data.append(val)
+
+        if any(str(v).strip() for v in row_data):
+            if current_cat in ["Courses", "Enrollment"]:
+                raw_data_storage[current_cat][current_course][selected_index] = row_data
+            else:
+                raw_data_storage[current_cat][selected_index] = row_data
+            # Save to CSV
+            if current_cat in ["Courses", "Enrollment"]:
+                save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
+                sg.popup("Saved", f"{current_course} {current_cat.lower()} data saved.")
+            else:
+                save_to_raw_csv(current_cat, raw_data_storage[current_cat])
+                sg.popup("Saved", f"{current_cat} data saved.")
+            edit_mode = False
+            selected_index = None
+            refresh_ui()
+        else:
+            sg.popup_error("Fields are empty!")
         selected = values["-TABLE-"]
         if selected:
             idx = selected[0]
