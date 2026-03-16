@@ -4,19 +4,16 @@ TeachMethLec,1,1,3,Regular Room,online
 CurrDes,1,1,1.5,Regular Room,hyflex_a
 AssEvalLec,1,1,3,Regular Room,online
 SpecSubj,1,1,2,Regular Room,hyflex_b
-
 PhilEdu,1,2,3,Regular Room,f2f
 CompEdLec,1,2,2,Computer Lab,online
 InstrTech,1,2,3,Computer Lab,hyflex_a
 ClassMgmtLec,1,2,1.5,Regular Room,online
 ResMeth,1,2,2,Regular Room,hyflex_b
-
 AdvTeachMeth,2,1,3,Regular Room,f2f
 EduResLec,2,1,2,Regular Room,online
 SchoolAdmin,2,1,3,Regular Room,hyflex_a
 CurrEvalLec,2,1,1.5,Regular Room,online
 EduPolicy,2,1,2,Regular Room,hyflex_b
-
 InclusiveEd,2,2,3,Regular Room,f2f
 EduLeadershipLec,2,2,2,Regular Room,online
 AssessTools,2,2,3,Regular Room,hyflex_a

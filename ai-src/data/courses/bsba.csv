@@ -4,19 +4,16 @@ BusCommLec,1,1,3,Regular Room,online
 AcctFund,1,1,1.5,Regular Room,hyflex_a
 MarkIntroLec,1,1,3,Regular Room,online
 OrgBeh,1,1,2,Regular Room,hyflex_b
-
 EntLaw,1,2,3,Regular Room,f2f
 MarkStratLec,1,2,2,Regular Room,online
 BusEthics,1,2,3,Regular Room,hyflex_a
 EcoTheoryLec,1,2,1.5,Regular Room,online
 HRMgmt,1,2,2,Regular Room,hyflex_b
-
 CorpFin,2,1,3,Regular Room,f2f
 StratMgmtLec,2,1,2,Regular Room,online
 IntlBus,2,1,3,Regular Room,hyflex_a
 OpsMgmtLec,2,1,1.5,Regular Room,online
 BusRes,2,1,2,Regular Room,hyflex_b
-
 AdvAcct,2,2,3,Regular Room,f2f
 InvestmentsLec,2,2,2,Regular Room,online
 BusPol,2,2,3,Regular Room,hyflex_a

@@ -4,19 +4,16 @@ BusModLec,1,1,3,Regular Room,online
 StartOps,1,1,1.5,Regular Room,hyflex_a
 InnMgmtLec,1,1,3,Regular Room,online
 VentCap,1,1,2,Regular Room,hyflex_b
-
 MarketRes,1,2,3,Regular Room,f2f
 FinStartupLec,1,2,2,Regular Room,online
 ProdDev,1,2,3,Regular Room,hyflex_a
 EntLawLec,1,2,1.5,Regular Room,online
 SalesStrat,1,2,2,Regular Room,hyflex_b
-
 GrowthStrat,2,1,3,Regular Room,f2f
 EntFinanceLec,2,1,2,Regular Room,online
 SupplyChain,2,1,3,Regular Room,hyflex_a
 GlobalEntLec,2,1,1.5,Regular Room,online
 InnovationLab,2,1,2,Science Lab,hyflex_b
-
 SocialEnt,2,2,3,Regular Room,f2f
 RiskMgmtLec,2,2,2,Regular Room,online
 EntLeadership,2,2,3,Regular Room,hyflex_a

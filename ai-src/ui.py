@@ -512,11 +512,14 @@ while True:
             sg.popup_error("Fields are empty!")
 
     if event == "SAVE TO CSV":
-        if current_cat in ["Courses", "Enrollment"]:
-            save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
-            sg.popup("Saved", f"{current_course} {current_cat.lower()} data saved.")
-        else:
-            save_to_raw_csv(current_cat, raw_data_storage[current_cat])
-            sg.popup("Saved", f"{current_cat} data saved.")
+        # Save all data to CSVs
+        save_to_raw_csv("Teachers", raw_data_storage["Teachers"])
+        save_to_raw_csv("Rooms", raw_data_storage["Rooms"])
+        for course_code in course_codes:
+            if course_code in raw_data_storage["Courses"]:
+                save_to_raw_csv("Courses", raw_data_storage["Courses"][course_code], course_code)
+            if course_code in raw_data_storage["Enrollment"]:
+                save_to_raw_csv("Enrollment", raw_data_storage["Enrollment"][course_code], course_code)
+        sg.popup("All changes saved to CSVs.")
 
 window.close()
