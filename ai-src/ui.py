@@ -43,11 +43,12 @@ def get_field_options(field):
     return sorted(values)
 
 # --- Internal Data Storage ---
-raw_data_storage = {"Teachers": [], "Rooms": [], "Courses": {}}
+raw_data_storage = {"Teachers": [], "Rooms": [], "Courses": {}, "Enrollment": {}}
 
 # --- Static schemas for Teachers and Rooms (from CSVs) ---
 TEACHERS_CSV = os.path.join(DATA_DIR, 'teachers.csv')
 ROOMS_CSV = os.path.join(DATA_DIR, 'rooms.csv')
+ENROLLMENT_DIR = os.path.join(DATA_DIR, 'enrollment')
 
 def get_teachers_schema():
     with open(TEACHERS_CSV, newline='', encoding='utf-8') as f:
@@ -59,6 +60,10 @@ def get_rooms_schema():
         reader = csv.reader(f)
         return [h.replace('_', ' ').title() for h in next(reader)]
 
+def get_enrollment_schema():
+    # Fixed schema for enrollment CSVs
+    return ["Year", "Semester", "Total Students"]
+
 # --- Dynamic schema dictionary ---
 def get_schema(category, course_code=None):
     if category == "Teachers":
@@ -67,6 +72,8 @@ def get_schema(category, course_code=None):
         return get_rooms_schema()
     elif category == "Courses" and course_code:
         return get_course_schema(course_code)
+    elif category == "Enrollment" and course_code:
+        return get_enrollment_schema()
     return []
 
 # --- Dynamic options dictionary (for dropdowns) ---
@@ -74,6 +81,13 @@ def get_options(field, category, course_code=None):
     if category == "Courses" and course_code:
         # Use field options from all courses for consistency
         return get_field_options(field)
+    elif category == "Enrollment" and course_code:
+        if field == "year":
+            return ["1", "2", "3", "4"]
+        elif field == "semester":
+            return ["1", "2"]
+        else:
+            return []
     # For Teachers/Rooms, no dropdowns by default
     return []
 
@@ -101,6 +115,9 @@ def save_to_raw_csv(category, data_list, course_code=None):
     if category == "Courses" and course_code:
         path = os.path.join(COURSES_DIR, f"{course_code.lower()}.csv")
         schema_headers = get_course_schema(course_code)
+    elif category == "Enrollment" and course_code:
+        path = os.path.join(ENROLLMENT_DIR, f"{course_code.lower()}.csv")
+        schema_headers = get_enrollment_schema()
     elif category == "Teachers":
         path = TEACHERS_CSV
         schema_headers = get_teachers_schema()
@@ -118,6 +135,8 @@ def save_to_raw_csv(category, data_list, course_code=None):
 def load_from_raw_csv(category, course_code=None):
     if category == "Courses" and course_code:
         path = os.path.join(COURSES_DIR, f"{course_code.lower()}.csv")
+    elif category == "Enrollment" and course_code:
+        path = os.path.join(ENROLLMENT_DIR, f"{course_code.lower()}.csv")
     elif category == "Teachers":
         path = TEACHERS_CSV
     elif category == "Rooms":
@@ -174,7 +193,7 @@ sg.theme('SystemDefaultForReal')
 
 course_codes = get_course_codes()
 default_course = course_codes[0] if course_codes else "BSIT"
-categories = ["Teachers", "Rooms", "Courses"]
+categories = ["Teachers", "Rooms", "Courses", "Enrollment"]
 current_cat = "Teachers"
 current_course = default_course
 
@@ -184,6 +203,7 @@ def get_max_cols():
     max_cols = max(max_cols, len(get_rooms_schema()))
     for code in course_codes:
         max_cols = max(max_cols, len(get_course_schema(code)))
+        max_cols = max(max_cols, len(get_enrollment_schema()))
     return max_cols
 
 MAX_COLS = get_max_cols()
@@ -192,7 +212,7 @@ placeholder_headings = [" " * (i + 1) for i in range(MAX_COLS)]
 layout = [
     [sg.Text("Academic Scheduling System", font=("Arial", 16, "bold"))],
     [sg.Button("Manage Teachers"), sg.Button("Manage Rooms"),
-     sg.Button("Manage Courses"),
+     sg.Button("Manage Courses"), sg.Button("Manage Enrollment"),
      sg.Combo(course_codes, default_course, key="-COURSE_SELECT-", readonly=True, visible=True, enable_events=True),
      sg.VerticalSeparator(), sg.Button("Load Saved Progress", button_color="grey")],
 
@@ -232,12 +252,13 @@ window = sg.Window("Academic Scheduler v2.0", layout, finalize=True)
 
 def refresh_ui():
     window["-CAT_DISPLAY-"].update(current_cat)
-    window["-COURSE_DISPLAY-"].update(f"({current_course})" if current_cat == "Courses" else "")
+    window["-COURSE_DISPLAY-"].update(f"({current_course})" if current_cat in ["Courses", "Enrollment"] else "")
+    window["-COURSE_SELECT-"].update(visible=current_cat in ["Courses", "Enrollment"])
 
     # --- Update table headings and data ---
-    if current_cat == "Courses":
+    if current_cat in ["Courses", "Enrollment"]:
         current_headings = get_schema(current_cat, current_course)
-        data = raw_data_storage["Courses"].get(current_course, [])
+        data = raw_data_storage[current_cat].get(current_course, [])
     else:
         current_headings = get_schema(current_cat)
         data = raw_data_storage[current_cat]
@@ -276,7 +297,7 @@ def refresh_ui():
             label_text = current_labels[i]
             window[f"-L{i}-"].update(value=label_text)
             window[f"-COL{i}-"].update(visible=True)
-            opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat == "Courses" else None)
+            opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             if opts:
                 window[f"-I{i}-"].update(value="", visible=False)
                 window[f"-C{i}-"].update(values=opts, value=opts[0], visible=True)
@@ -298,6 +319,7 @@ def refresh_ui():
 raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
 raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
 raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
+raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
 
 refresh_ui()
 
@@ -307,12 +329,12 @@ while True:
     if event in (sg.WIN_CLOSED, "Exit"):
         break
 
-    if event in ["Manage Teachers", "Manage Rooms", "Manage Courses"]:
+    if event in ["Manage Teachers", "Manage Rooms", "Manage Courses", "Manage Enrollment"]:
         current_cat = event.split(" ")[1]
         refresh_ui()
 
     if event == "-COURSE_SELECT-":
-        if current_cat == "Courses":
+        if current_cat in ["Courses", "Enrollment"]:
             current_course = values["-COURSE_SELECT-"]
             refresh_ui()
 
@@ -320,24 +342,25 @@ while True:
         raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
         raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
         raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
+        raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
         refresh_ui()
         sg.popup_quick_message("Data Restored.")
 
     if event == "Add Record":
-        if current_cat == "Courses":
+        if current_cat in ["Courses", "Enrollment"]:
             schema_fields = get_schema(current_cat, current_course)
         else:
             schema_fields = get_schema(current_cat)
         row_data = []
         for i in range(len(schema_fields)):
             label = schema_fields[i]
-            opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat == "Courses" else None)
+            opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             val = values[f"-C{i}-"] if opts else values[f"-I{i}-"]
             row_data.append(val)
 
         if any(str(v).strip() for v in row_data):
-            if current_cat == "Courses":
-                raw_data_storage["Courses"].setdefault(current_course, []).append(row_data)
+            if current_cat in ["Courses", "Enrollment"]:
+                raw_data_storage[current_cat].setdefault(current_course, []).append(row_data)
             else:
                 raw_data_storage[current_cat].append(row_data)
             refresh_ui()
@@ -355,18 +378,18 @@ while True:
         selected = values["-TABLE-"]
         if selected:
             idx = selected[0]
-            if current_cat == "Courses":
-                if idx < len(raw_data_storage["Courses"].get(current_course, [])):
-                    raw_data_storage["Courses"][current_course].pop(idx)
+            if current_cat in ["Courses", "Enrollment"]:
+                if idx < len(raw_data_storage[current_cat].get(current_course, [])):
+                    raw_data_storage[current_cat][current_course].pop(idx)
             else:
                 if idx < len(raw_data_storage[current_cat]):
                     raw_data_storage[current_cat].pop(idx)
             refresh_ui()
 
     if event == "SAVE TO CSV":
-        if current_cat == "Courses":
-            save_to_raw_csv(current_cat, raw_data_storage["Courses"].get(current_course, []), current_course)
-            sg.popup("Saved", f"{current_course} data saved.")
+        if current_cat in ["Courses", "Enrollment"]:
+            save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
+            sg.popup("Saved", f"{current_course} {current_cat.lower()} data saved.")
         else:
             save_to_raw_csv(current_cat, raw_data_storage[current_cat])
             sg.popup("Saved", f"{current_cat} data saved.")
