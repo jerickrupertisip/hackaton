@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-EntLaw,3.0,Friday,9:00,10:30,TBA,f2f,Pedro Cruz
-MarkStratLec,2.0,Friday,18:00,19:30,Online,online,TBA
-BusEthics,3.0,Tuesday,9:00,10:30,TBA,hyflex_a,Pedro Cruz
-EcoTheoryLec,1.5,Saturday,15:00,16:30,Online,online,Tina Ong
-HRMgmt,2.0,Tuesday,10:30,12:00,TBA,hyflex_b,Elena Garcia
+EntLaw,3.0,Friday,9:00,10:30,TBA,f2f,TBA
+MarkStratLec,2.0,Saturday,12:00,13:30,Online,online,Sara Lee
+BusEthics,3.0,Saturday,13:30,15:00,TBA,hyflex_a,Pedro Cruz
+EcoTheoryLec,1.5,Monday,18:00,19:30,Online,online,Tina Ong
+HRMgmt,2.0,Wednesday,13:30,15:00,TBA,hyflex_b,Elena Garcia
