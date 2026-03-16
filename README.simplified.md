@@ -38,9 +38,9 @@ Subjects are described by a structural type that determines units and modality.
 
 | Subject Structure ($V_{subjectStructure}$) | Components | Units ($V_{units}$) | Modality ($V_{modality}$) | Room Requirement ($V_{roomRequirement}$) |
 | :--- | :--- | :--- | :--- | :--- |
-| Split Subject | Component A: Lab | 2 Units | $V_{modality}$ | $R_{roomCategory}$ |
+| Split Subject | Component A: Lab | 2 Units | $V_{modality}$ or $H_{hyflex}$ | $R_{roomCategory}$ |
 |  | Component B: Lecture | 1 Unit | Online | Online Class |
-| Single Subject | Standard | 1.5 or 3 Units | $V_{modality}$ | $R_{roomCategory}$ |
+| Single Subject | Standard | 1.5 or 3 Units | $V_{modality}$ or $H_{hyflex}$ | $R_{roomCategory}$ |
 
 Subject Setup:
 - Each course has a list of Room Category Requirements (or'ed)
@@ -54,10 +54,24 @@ Subject Setup:
         - BSIT has WebSys, ArcOrg, QMethods, Rizal, Capstone, SysArc, DBMS, etc...
         - BSBA has... idk.
 
+#### Hyflex ($H_{hyflex}$)
+
+- Hyflex eligibility: A Single Subject or a Split Subject's Component A: Lab may be designated Hyflex.
+- Definition: Hyflex means the subject's modality alternates by week rather than being fixed for every scheduled meeting.
+- Hyflex variants:
+  - Hyflex-A: Week pattern = F2F, Online, F2F, Online, ...
+  - Hyflex-B: Week pattern = Online, F2F, Online, F2F, ...
+- Scheduling implications:
+  - The scheduled time slot (day/time) for a Hyflex subject remains fixed in the weekly timetable, but the actual modality for that slot alternates by calendar week according to the Hyflex variant.
+  - Room assignment and conflict detection must therefore consider week parity (or an equivalent week-indexing mechanism) so that occupancy is resolved per-week rather than only per-time-slot.
+  - Teacher and section continuity constraints still apply: a teacher cannot be double-booked in the same week and time even if one of the classes is online that week.
+  - Hyflex subjects must be tracked as a repeating weekly pattern with an initial phase (Hyflex-A starts F2F on week 1; Hyflex-B starts Online on week 1).
+
 ### Class Modality ($V_{modality}$)
 
 - Online Class
 - F2F Class
+- Hyflex (weekly alternating modality; see Hyflex section)
 
 ### Schedule ($V_{schedule}$)
 
@@ -76,6 +90,7 @@ Subject Setup:
             - WebSys in Tuesday
             - ArcOrg and QMethods in Wednesday
             - Rizal in Sunday
+1. Hyflex-aware Room Allocation: when a subject is Hyflex, room allocation and conflict checks must be evaluated per calendar week according to the Hyflex pattern. Room occupancy and conflicts should be resolved with awareness of the Hyflex weekly modality pattern.
 
 ---
 
