@@ -1,10 +1,10 @@
-teacher,expertise 
+teacher,expertise
 Juan Santos,"ProgFund, SoftEng, AdvProg, BigData"
 Maria DelaCruz,"NetSec, CompArch, CyberSec"
 Carlos Ramirez,"SysDev, CloudComp, IoTSystems"
 Ana Villanueva,"DatMan, AIIntro, UXDesign, DataAnalytics"
 Jose Hernandez,"WebDev, ITProjMgmt, MobileDev, ITStrategy"
-Luis Bautista,OSFund
+Luis Bautista,"OSFund"
 Pedro Cruz,"FinMgmt, EntLaw, BusEthics"
 Rosa Reyes,"BusComm, MarkStrat, EcoTheory"
 Miguel Mendoza,"AcctFund, AdvAcct, CostAcc"
@@ -14,4 +14,4 @@ Diego Castillo,"BusMod, StartOps, ProdDev, SupplyChain"
 Sofia Navarro,"VentCap, SalesStrat, InnovationLab"
 Antonio Aquino,"AccSys, Auditing, GovAcc, BusLaw"
 Ricardo Ramos,"FinAcc, Taxation, CorpAcc, MgmtAcc"
-Isabel Flores,"ChildDev, EduPsy"
+Isabel Flores,"ChildDev, EduPsy, DataCommLec"
