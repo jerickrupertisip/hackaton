@@ -361,13 +361,12 @@ def refresh_ui():
     # Clear table
     for item in table.get_children():
         table.delete(item)
+    # Set columns dynamically
+    table['columns'] = current_headings
     # Set headings
     for i, heading in enumerate(current_headings):
         table.heading(i, text=heading)
         table.column(i, width=120, minwidth=40)
-    for i in range(num_cols, MAX_COLS):
-        table.heading(i, text="")
-        table.column(i, width=0)
 
     # Insert data
     for row in data:
