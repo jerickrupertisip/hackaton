@@ -94,22 +94,31 @@ def get_options(field, category, course_code=None):
     return []
 
 def load_output_csv(course_code):
-    files = [f for f in os.listdir(OUTPUT_DIR) if f.upper().startswith(course_code.upper()) and f.endswith('.csv')]
+    course_dir = os.path.join(OUTPUT_DIR, course_code.upper())
+    if not os.path.exists(course_dir):
+        return []
+    files = [f for f in os.listdir(course_dir) if f.endswith('.csv')]
     if not files:
-        return [], []
-    # Assume all have same headers, take from first
-    path = os.path.join(OUTPUT_DIR, files[0])
+        return []
+    # Get headers from first file
+    path = os.path.join(course_dir, files[0])
     with open(path, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
         headers = next(reader)
-    data = []
+    sections_data = []
     for file in files:
-        path = os.path.join(OUTPUT_DIR, file)
+        section_num = file.replace('.csv', '')
+        section = f"{course_code}-{section_num}"
+        path = os.path.join(course_dir, file)
+        data = []
         with open(path, newline='', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader)  # skip header
-            data.extend([row for row in reader if any(cell.strip() for cell in row)])
-    return headers, data
+            for row in reader:
+                if any(cell.strip() for cell in row):
+                    data.append(row)
+        sections_data.append((section, headers, data))
+    return sections_data
 
 # --- CSV Functions (Dynamic) ---
 def save_to_raw_csv(category, data_list, course_code=None):
@@ -213,6 +222,7 @@ def get_max_cols():
     for code in course_codes:
         max_cols = max(max_cols, len(get_course_schema(code)))
         max_cols = max(max_cols, len(get_enrollment_schema()))
+    max_cols = max(max_cols, 9)  # For output with Section column
     return max_cols
 
 MAX_COLS = get_max_cols()
@@ -326,10 +336,14 @@ output_course_select = ttk.Combobox(tab2, values=course_codes, state="readonly")
 output_course_select.set(default_course)
 output_course_select.pack(pady=5)
 
-output_table_frame = tk.Frame(tab2)
-output_table_frame.pack(fill=tk.BOTH, expand=True)
-output_table = ttk.Treeview(output_table_frame, columns=placeholder_headings, show="headings", height=10)
-output_table.pack(fill=tk.BOTH, expand=True)
+output_scroll = tk.Canvas(tab2)
+output_scroll.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+output_scrollbar = ttk.Scrollbar(tab2, orient="vertical", command=output_scroll.yview)
+output_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+output_scroll.configure(yscrollcommand=output_scrollbar.set)
+
+output_inner = tk.Frame(output_scroll)
+output_scroll.create_window((0,0), window=output_inner, anchor="nw")
 
 # --- Edit Mode State ---
 edit_mode = False
@@ -613,32 +627,39 @@ def save_to_csv():
 
 def output_course_changed(event):
     selected_course = output_course_select.get()
-    headers, data = load_output_csv(selected_course)
-    num_cols = min(len(headers), MAX_COLS)
-    headers = headers[:num_cols]
-    # Clear output table
-    for item in output_table.get_children():
-        output_table.delete(item)
-    # Set headings
-    for i, heading in enumerate(headers):
-        output_table.heading(i, text=heading)
-        output_table.column(i, width=120, minwidth=40)
-    for i in range(num_cols, MAX_COLS):
-        output_table.heading(i, text="")
-        output_table.column(i, width=0)
-    # Insert data
-    for row in data:
-        padded_row = (list(row) + [""] * MAX_COLS)[:MAX_COLS]
-        output_table.insert("", tk.END, values=padded_row)
+    sections_data = load_output_csv(selected_course)
+    # Clear previous widgets
+    for widget in output_inner.winfo_children():
+        widget.destroy()
+    for section, headers, data in sections_data:
+        section_label = tk.Label(output_inner, text=f"Section {section}", font=("Arial", 12, "bold"))
+        section_label.pack(pady=5)
+        table = ttk.Treeview(output_inner, columns=headers, show="headings", height=5)
+        for i, h in enumerate(headers):
+            table.heading(i, text=h)
+            table.column(i, width=120, minwidth=40)
+        for row in data:
+            table.insert("", tk.END, values=row)
+        table.pack(pady=5)
+    # Update scroll region
+    output_inner.update_idletasks()
+    output_scroll.configure(scrollregion=output_scroll.bbox("all"))
 
 def run_scheduler():
     # Placeholder for running the scheduler
     messagebox.showinfo("Run Scheduler", "Scheduler not implemented yet.")
 
+output_course_changed(None)  # Load initial output data
+
 def exit_app():
     root.quit()
 
+def on_tab_changed(event):
+    if tab_control.index(tab_control.select()) == 1:  # Output tab
+        output_course_changed(None)
+
 # Bind events
+tab_control.bind("<<NotebookTabChanged>>", on_tab_changed)
 manage_teachers_btn.config(command=manage_teachers)
 manage_rooms_btn.config(command=manage_rooms)
 manage_courses_btn.config(command=manage_courses)

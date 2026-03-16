@@ -1,0 +1,6 @@
+subject,unit,day,start_time,end_time,room,modality,teacher
+MarketRes,3.0,Monday,7:30,9:00,TBA,f2f,Laura Lopez
+FinStartupLec,2.0,Monday,9:00,10:30,Online,online,Yara Navarro
+ProdDev,3.0,Monday,10:30,12:00,TBA,hyflex_a,Diego Castillo
+EntLawLec,1.5,Tuesday,7:30,9:00,Online,online,Yara Navarro
+SalesStrat,2.0,Tuesday,9:00,10:30,TBA,hyflex_b,Sofia Navarro
