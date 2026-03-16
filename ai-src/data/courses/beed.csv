@@ -1,0 +1,24 @@
+subject,year,semester,units,preferred_room,modality
+ChildDev,1,1,2,Regular Room,f2f
+LangLitLec,1,1,3,Regular Room,online
+EduTech,1,1,1.5,Computer Lab,hyflex_a
+SocStuLec,1,1,3,Regular Room,online
+MathEd,1,1,2,Regular Room,hyflex_b
+
+SciEd,1,2,3,Science Lab,f2f
+MusicEdLec,1,2,2,Regular Room,online
+ArtEd,1,2,3,Regular Room,hyflex_a
+PEdLec,1,2,1.5,Regular Room,online
+ValuesEd,1,2,2,Regular Room,hyflex_b
+
+CurrDev,2,1,3,Regular Room,f2f
+ClassMgmtLec,2,1,2,Regular Room,online
+AssessLearn,2,1,3,Regular Room,hyflex_a
+ReadWriteLec,2,1,1.5,Regular Room,online
+EarlyLit,2,1,2,Regular Room,hyflex_b
+
+EduPsych,2,2,3,Regular Room,f2f
+SpecEdLec,2,2,2,Regular Room,online
+InstrDesign,2,2,3,Computer Lab,hyflex_a
+EduResLec,2,2,1.5,Regular Room,online
+TeachPrac,2,2,2,Regular Room,hyflex_b

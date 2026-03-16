@@ -319,11 +319,11 @@ if __name__ == "__main__":
     # INPUT (procedural or manual)
     # -----------------------
     # Procedural defaults (you may edit these variables manually)
-    f_floors = 3
-    r_roomsPerFloor = 6
+    f_floors = 5
+    r_roomsPerFloor = 10
     m_modalityRatio = (30, 70)  # not used in this small sample but available
     s_sections = 4  # not directly used; sections generated procedurally
-    e_emptyDays = 1  # prefer 1 empty day per section
+    e_emptyDays = 2  # prefer 1 empty day per section
 
     # Generate rooms, teachers, sections, subjects
     rooms = generate_rooms(floors=f_floors, rooms_per_floor=r_roomsPerFloor, labs=2)

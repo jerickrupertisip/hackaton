@@ -1,0 +1,24 @@
+subject,year,semester,units,preferred_room,modality
+AccSys,1,1,2,Regular Room,f2f
+FinAccLec,1,1,3,Regular Room,online
+CostAcc,1,1,1.5,Regular Room,hyflex_a
+TaxationLec,1,1,3,Regular Room,online
+Auditing,1,1,2,Regular Room,hyflex_b
+
+MgmtAcc,1,2,3,Regular Room,f2f
+CorpAccLec,1,2,2,Regular Room,online
+GovAcc,1,2,3,Regular Room,hyflex_a
+BusLawLec,1,2,1.5,Regular Room,online
+AcctInfoSys,1,2,2,Computer Lab,hyflex_b
+
+AdvFinAcc,2,1,3,Regular Room,f2f
+IntAuditingLec,2,1,2,Regular Room,online
+TaxPlanning,2,1,3,Regular Room,hyflex_a
+AcctTheoryLec,2,1,1.5,Regular Room,online
+EthicsAcc,2,1,2,Regular Room,hyflex_b
+
+ForensicAcc,2,2,3,Science Lab,f2f
+IntlAccLec,2,2,2,Regular Room,online
+AcctResearch,2,2,3,Regular Room,hyflex_a
+FinReportingLec,2,2,1.5,Regular Room,online
+AcctAnalysis,2,2,2,Regular Room,hyflex_b

@@ -28,6 +28,8 @@ Rooms Setup:
 ### Section
 
 Section identifier format: `<course>-<year-level><section>`
+- section are procedurally generated, generate more section *if needed*
+- `<section>` is incremented by 1 *if needed* more sections
 - For example: BSIT-105, BSIT-205, BSIT-107, BSIT-307s
 
 ## Subject ($S$)
