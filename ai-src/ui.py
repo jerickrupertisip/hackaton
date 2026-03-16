@@ -161,6 +161,42 @@ def load_from_raw_csv(category, course_code=None):
 
 
 
+def select_subjects():
+    all_subjects = sorted(get_field_options("subject"))
+    current_expertise = fields[1][2].get().strip()
+    if current_expertise:
+        pre_selected = [s.strip() for s in current_expertise.split(",")]
+    else:
+        pre_selected = []
+
+    subject_window = tk.Toplevel(root)
+    subject_window.title("Select Subjects")
+    subject_window.grab_set()
+    subject_window.focus()
+    listbox = tk.Listbox(subject_window, selectmode=tk.MULTIPLE, height=10, width=50)
+    for subject in all_subjects:
+        listbox.insert(tk.END, subject)
+        if subject in pre_selected:
+            listbox.selection_set(listbox.size() - 1)
+    listbox.pack(pady=10)
+
+    def ok():
+        selected = [listbox.get(i) for i in listbox.curselection()]
+        if selected:
+            expertise_str = ", ".join(selected)
+            fields[1][2].delete(0, tk.END)
+            fields[1][2].insert(0, expertise_str)
+        subject_window.destroy()
+
+    def cancel():
+        subject_window.destroy()
+
+    btn_frame = tk.Frame(subject_window)
+    btn_frame.pack()
+    tk.Button(btn_frame, text="OK", command=ok).pack(side=tk.LEFT, padx=5)
+    tk.Button(btn_frame, text="Cancel", command=cancel).pack(side=tk.LEFT, padx=5)
+
+
 # --- Main Layout ---
 course_codes = get_course_codes()
 default_course = course_codes[0] if course_codes else "BSIT"
@@ -251,11 +287,13 @@ for i in range(MAX_COLS):
     combo = ttk.Combobox(frame, width=43, state="readonly")
     chk_var = tk.BooleanVar()
     chk = tk.Checkbutton(frame, text="Available", variable=chk_var)
+    button = tk.Button(frame, text="Select Subjects", command=select_subjects)
     entry.pack_forget()
     combo.pack_forget()
     chk.pack_forget()
+    button.pack_forget()
     frame.pack(pady=(8,2), anchor='w')
-    fields.append((frame, label, entry, combo, chk, chk_var))
+    fields.append((frame, label, entry, combo, chk, chk_var, button))
 
 # Buttons
 button_frame2 = tk.Frame(tab1)
@@ -265,7 +303,6 @@ edit_btn = tk.Button(button_frame2, text="Edit Selected", bg="#ffc107", width=15
 remove_btn = tk.Button(button_frame2, text="Remove Selected", bg="#dc3545", width=15)
 cancel_btn = tk.Button(button_frame2, text="Cancel", bg="#6c757d", width=10)
 confirm_btn = tk.Button(button_frame2, text="Confirm", bg="#007bff", width=10)
-select_subjects_btn = tk.Button(button_frame2, text="Select Subjects", bg="#17a2b8")
 save_csv_btn = tk.Button(button_frame2, text="SAVE TO CSV", bg="#007bff", width=15)
 
 add_btn.pack(side=tk.LEFT, padx=5)
@@ -273,7 +310,6 @@ edit_btn.pack(side=tk.LEFT, padx=5)
 remove_btn.pack(side=tk.LEFT, padx=5)
 cancel_btn.pack(side=tk.LEFT, padx=5)
 confirm_btn.pack(side=tk.LEFT, padx=5)
-select_subjects_btn.pack(side=tk.LEFT, padx=5)
 save_csv_btn.pack(side=tk.LEFT, padx=5)
 
 sep2 = ttk.Separator(tab1, orient='horizontal')
@@ -357,6 +393,10 @@ def refresh_ui():
                 fields[i][2].pack(side=tk.LEFT)
                 fields[i][3].pack_forget()
                 fields[i][4].pack_forget()
+                if current_cat == "Teachers" and i == 1:
+                    fields[i][6].pack(side=tk.LEFT, padx=5)
+                else:
+                    fields[i][6].pack_forget()
         else:
             fields[i][0].pack_forget()
 
@@ -367,7 +407,6 @@ def refresh_ui():
     cancel_btn.pack_forget() if not edit_mode else cancel_btn.pack(side=tk.LEFT, padx=5)
     confirm_btn.pack_forget() if not edit_mode else confirm_btn.pack(side=tk.LEFT, padx=5)
     save_csv_btn.pack_forget() if edit_mode else save_csv_btn.pack(side=tk.LEFT, padx=5)
-    select_subjects_btn.pack_forget() if current_cat != "Teachers" else select_subjects_btn.pack(side=tk.LEFT, padx=5)
 
     # --- Populate form if in edit mode ---
     if edit_mode and selected_index is not None and selected_index < len(data):
@@ -517,39 +556,6 @@ def remove_selected():
                     data_list.pop(idx)
         refresh_ui()
 
-def select_subjects():
-    all_subjects = sorted(get_field_options("subject"))
-    current_expertise = fields[1][2].get().strip()
-    if current_expertise:
-        pre_selected = [s.strip() for s in current_expertise.split(",")]
-    else:
-        pre_selected = []
-
-    subject_window = tk.Toplevel(root)
-    subject_window.title("Select Subjects")
-    listbox = tk.Listbox(subject_window, selectmode=tk.MULTIPLE, height=10, width=50)
-    for subject in all_subjects:
-        listbox.insert(tk.END, subject)
-        if subject in pre_selected:
-            listbox.selection_set(listbox.size() - 1)
-    listbox.pack(pady=10)
-
-    def ok():
-        selected = [listbox.get(i) for i in listbox.curselection()]
-        if selected:
-            expertise_str = ", ".join(selected)
-            fields[1][2].delete(0, tk.END)
-            fields[1][2].insert(0, expertise_str)
-        subject_window.destroy()
-
-    def cancel():
-        subject_window.destroy()
-
-    btn_frame = tk.Frame(subject_window)
-    btn_frame.pack()
-    tk.Button(btn_frame, text="OK", command=ok).pack(side=tk.LEFT, padx=5)
-    tk.Button(btn_frame, text="Cancel", command=cancel).pack(side=tk.LEFT, padx=5)
-
 def cancel_edit():
     global edit_mode, selected_index
     edit_mode = False
@@ -639,7 +645,6 @@ load_progress_btn.config(command=load_saved_progress)
 add_btn.config(command=add_record)
 edit_btn.config(command=edit_selected)
 remove_btn.config(command=remove_selected)
-select_subjects_btn.config(command=select_subjects)
 cancel_btn.config(command=cancel_edit)
 confirm_btn.config(command=confirm_edit)
 save_csv_btn.config(command=save_to_csv)
