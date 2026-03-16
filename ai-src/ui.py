@@ -429,6 +429,23 @@ while True:
             selected_index = selected[0]
             refresh_ui()
 
+    if event == "Remove Selected":
+        selected = values["-TABLE-"]
+        if selected:
+            # Sort indices in descending order to remove from highest index first
+            selected_indices = sorted(selected, reverse=True)
+            if current_cat in ["Courses", "Enrollment"]:
+                data_list = raw_data_storage[current_cat][current_course]
+                for idx in selected_indices:
+                    if idx < len(data_list):
+                        data_list.pop(idx)
+            else:
+                data_list = raw_data_storage[current_cat]
+                for idx in selected_indices:
+                    if idx < len(data_list):
+                        data_list.pop(idx)
+            refresh_ui()
+
     if event == "-SELECT_SUBJECTS-":
         all_subjects = sorted(get_field_options("subject"))
         current_expertise = values.get("-I1-", "").strip()
@@ -493,16 +510,6 @@ while True:
             refresh_ui()
         else:
             sg.popup_error("Fields are empty!")
-        selected = values["-TABLE-"]
-        if selected:
-            idx = selected[0]
-            if current_cat in ["Courses", "Enrollment"]:
-                if idx < len(raw_data_storage[current_cat].get(current_course, [])):
-                    raw_data_storage[current_cat][current_course].pop(idx)
-            else:
-                if idx < len(raw_data_storage[current_cat]):
-                    raw_data_storage[current_cat].pop(idx)
-            refresh_ui()
 
     if event == "SAVE TO CSV":
         if current_cat in ["Courses", "Enrollment"]:
