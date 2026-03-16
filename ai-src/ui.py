@@ -1,4 +1,5 @@
-import FreeSimpleGUI as sg
+import tkinter as tk
+from tkinter import ttk, messagebox, filedialog
 import csv
 import os
 
@@ -110,25 +111,6 @@ def load_output_csv(course_code):
             data.extend([row for row in reader if any(cell.strip() for cell in row)])
     return headers, data
 
-# --- Internal Data Storage ---
-raw_data_storage = {"Teachers": [], "Rooms": [], "Courses": []}
-
-schema = {
-    "Teachers": ["Teacher Name", "Expertise", "Availability"],
-    "Rooms": ["Room ID", "Category", "Capacity", "Floor"],
-    "Courses": ["Subject", "Year", "Semester", "Units", "Preferred Room", "Modality"]
-}
-
-options = {
-    "Category": ["Regular", "Science Lab", "Computer Lab"],
-    "Year": ["1st", "2nd", "3rd", "4th"],
-    "Semester": ["1st", "2nd"],
-    "Modality": ["f2f", "online", "hyflex_a", "hyflex_b"],
-    "Preferred Room": ["Regular", "Science Lab", "Computer Lab", "Online"]
-}
-
-
-
 # --- CSV Functions (Dynamic) ---
 def save_to_raw_csv(category, data_list, course_code=None):
     if category == "Courses" and course_code:
@@ -175,42 +157,11 @@ def load_from_raw_csv(category, course_code=None):
 
 
 
-# --- UI Helpers ---
-def create_input_fields(num_fields):
-    FIELD_H = 62
-    inner = []
-    for i in range(num_fields):
-        field_layout = [
-            [sg.Text("", key=f"-L{i}-", font=("Arial", 10, "bold"), pad=((8, 5), (8, 2)))],
-            [sg.Input(key=f"-I{i}-", size=(44, 1), pad=((8, 5), (0, 8)), visible=True),
-             sg.Combo([], key=f"-C{i}-", size=(43, 1), pad=((8, 5), (0, 8)), visible=False, readonly=True),
-             sg.Checkbox("Available", key=f"-CHK{i}-", pad=((8, 5), (0, 8)), visible=False)]
-        ]
-        inner.append([
-            sg.Column(
-                field_layout,
-                key=f"-COL{i}-",
-                visible=False,
-                pad=(0, 0),
-                size=(None, FIELD_H)
-            )
-        ])
-    scrollable_col = sg.Column(
-        inner,
-        scrollable=True,
-        vertical_scroll_only=True,
-        size=(480, 175),
-        expand_x=True,
-        key="-FORM-SCROLL-",
-        pad=(5, 5)
-    )
-    return [[scrollable_col]]
+
 
 
 
 # --- Main Layout ---
-sg.theme('SystemDefaultForReal')
-
 course_codes = get_course_codes()
 default_course = course_codes[0] if course_codes else "BSIT"
 categories = ["Teachers", "Rooms", "Courses", "Enrollment"]
@@ -229,81 +180,130 @@ def get_max_cols():
 MAX_COLS = get_max_cols()
 placeholder_headings = [" " * (i + 1) for i in range(MAX_COLS)]
 
-tab1_layout = [
-    [sg.Text("Academic Scheduling System", font=("Arial", 16, "bold"))],
-    [sg.Button("Manage Teachers"), sg.Button("Manage Rooms"),
-     sg.Button("Manage Courses"), sg.Button("Manage Enrollment"),
-     sg.Combo(course_codes, default_course, key="-COURSE_SELECT-", readonly=True, visible=True, enable_events=True),
-     sg.VerticalSeparator(), sg.Button("Load Saved Progress", button_color="grey")],
+root = tk.Tk()
+root.title("Academic Scheduler v2.0")
+root.geometry("800x600")
 
-    [sg.HSeparator(pad=(0, 15))],
+# Tab control
+tab_control = ttk.Notebook(root)
+tab1 = ttk.Frame(tab_control)
+tab2 = ttk.Frame(tab_control)
+tab_control.add(tab1, text="Inputs")
+tab_control.add(tab2, text="Outputs")
+tab_control.pack(expand=1, fill="both")
 
-    [sg.Text("Currently Editing: ", font=("Arial", 10, "italic")),
-     sg.Text("Teachers", key="-CAT_DISPLAY-", text_color="#1a73e8", font=("Arial", 11, "bold")),
-     sg.Text("", key="-COURSE_DISPLAY-", text_color="#e6731a", font=("Arial", 11, "bold"))],
+# Tab 1: Inputs
+title_label = tk.Label(tab1, text="Academic Scheduling System", font=("Arial", 16, "bold"))
+title_label.pack(pady=10)
 
-    [sg.Table(
-        values=[],
-        headings=placeholder_headings,
-        auto_size_columns=True,
-        num_rows=10,
-        key="-TABLE-",
-        expand_x=True,
-        enable_events=True,
-        col_widths=[18] * MAX_COLS,
-        justification='left'
-    )],
+button_frame = tk.Frame(tab1)
+button_frame.pack(pady=5)
+manage_teachers_btn = tk.Button(button_frame, text="Manage Teachers")
+manage_rooms_btn = tk.Button(button_frame, text="Manage Rooms")
+manage_courses_btn = tk.Button(button_frame, text="Manage Courses")
+manage_enrollment_btn = tk.Button(button_frame, text="Manage Enrollment")
+course_select = ttk.Combobox(button_frame, values=course_codes, state="readonly")
+course_select.set(default_course)
+load_progress_btn = tk.Button(button_frame, text="Load Saved Progress", bg="grey")
 
-    [sg.Frame("Entry Form", create_input_fields(MAX_COLS), border_width=1, expand_x=True, pad=(0, 20))],
+manage_teachers_btn.pack(side=tk.LEFT, padx=5)
+manage_rooms_btn.pack(side=tk.LEFT, padx=5)
+manage_courses_btn.pack(side=tk.LEFT, padx=5)
+manage_enrollment_btn.pack(side=tk.LEFT, padx=5)
+course_select.pack(side=tk.LEFT, padx=5)
+load_progress_btn.pack(side=tk.LEFT, padx=5)
 
-    [sg.Button("Select Subjects", key="-SELECT_SUBJECTS-", visible=False, button_color="#17a2b8")],
+sep1 = ttk.Separator(tab1, orient='horizontal')
+sep1.pack(fill='x', pady=15)
 
-    [sg.Button("Add Record", button_color="#28a745", size=(15, 1)),
-     sg.Button("Edit Selected", button_color="#ffc107", size=(15, 1)),
-     sg.Button("Remove Selected", button_color="#dc3545", size=(15, 1)),
-     sg.Button("Cancel", button_color="#6c757d", size=(10, 1), visible=False),
-     sg.Button("Confirm", button_color="#007bff", size=(10, 1), visible=False),
-     sg.Push(),
-     sg.Button("SAVE TO CSV", size=(15, 1), button_color="#007bff")],
+current_label = tk.Label(tab1, text="Currently Editing: ", font=("Arial", 10, "italic"))
+current_cat_label = tk.Label(tab1, text="Teachers", fg="#1a73e8", font=("Arial", 11, "bold"))
+current_course_label = tk.Label(tab1, text="", fg="#e6731a", font=("Arial", 11, "bold"))
+current_label.pack(side=tk.LEFT)
+current_cat_label.pack(side=tk.LEFT)
+current_course_label.pack(side=tk.LEFT)
 
-    [sg.HSeparator(pad=(0, 15))],
-    [sg.Button("RUN SCHEDULER", size=(25, 2), button_color=("white", "#343a40")),
-     sg.Push(), sg.Button("Exit", size=(10, 2))]
-]
+# Table
+table_frame = tk.Frame(tab1)
+table_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+table = ttk.Treeview(table_frame, columns=placeholder_headings, show="headings", height=10)
+table.pack(fill=tk.BOTH, expand=True)
 
-tab2_layout = [
-    [sg.Text("Output Visualization", font=("Arial", 16, "bold"))],
-    [sg.Combo(course_codes, default_course, key="-OUTPUT_COURSE_SELECT-", readonly=True, enable_events=True)],
-    [sg.Table(
-        values=[],
-        headings=placeholder_headings,
-        auto_size_columns=True,
-        num_rows=10,
-        key="-OUTPUT_TABLE-",
-        expand_x=True,
-        col_widths=[18] * MAX_COLS,
-        justification='left'
-    )]
-]
+# Form Frame
+form_frame = tk.LabelFrame(tab1, text="Entry Form", padx=10, pady=10)
+form_frame.pack(fill=tk.X, pady=20)
 
-layout = [
-    [sg.Button("Inputs", key="-TAB_BTN1-", button_color="blue"), sg.Button("Outputs", key="-TAB_BTN2-")],
-    [sg.Frame("Inputs", tab1_layout, visible=True, key="-TAB1-", expand_x=True, expand_y=True)],
-    [sg.Frame("Outputs", tab2_layout, visible=False, key="-TAB2-", expand_x=True, expand_y=True)]
-]
+form_scroll = tk.Canvas(form_frame, height=175)
+form_scroll.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+scrollbar = ttk.Scrollbar(form_frame, orient="vertical", command=form_scroll.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+form_scroll.configure(yscrollcommand=scrollbar.set)
 
-window = sg.Window("Academic Scheduler v2.0", layout, finalize=True)
+form_inner = tk.Frame(form_scroll)
+form_scroll.create_window((0,0), window=form_inner, anchor="nw")
+
+fields = []
+for i in range(MAX_COLS):
+    label = tk.Label(form_inner, text="", font=("Arial", 10, "bold"))
+    label.pack(pady=(8,2))
+    entry = tk.Entry(form_inner, width=44)
+    combo = ttk.Combobox(form_inner, width=43, state="readonly")
+    chk_var = tk.BooleanVar()
+    chk = tk.Checkbutton(form_inner, text="Available", variable=chk_var)
+    entry.pack_forget()
+    combo.pack_forget()
+    chk.pack_forget()
+    fields.append((label, entry, combo, chk, chk_var))
+
+# Buttons
+button_frame2 = tk.Frame(tab1)
+button_frame2.pack(pady=10)
+add_btn = tk.Button(button_frame2, text="Add Record", bg="#28a745", width=15)
+edit_btn = tk.Button(button_frame2, text="Edit Selected", bg="#ffc107", width=15)
+remove_btn = tk.Button(button_frame2, text="Remove Selected", bg="#dc3545", width=15)
+cancel_btn = tk.Button(button_frame2, text="Cancel", bg="#6c757d", width=10)
+confirm_btn = tk.Button(button_frame2, text="Confirm", bg="#007bff", width=10)
+select_subjects_btn = tk.Button(button_frame2, text="Select Subjects", bg="#17a2b8")
+save_csv_btn = tk.Button(button_frame2, text="SAVE TO CSV", bg="#007bff", width=15)
+
+add_btn.pack(side=tk.LEFT, padx=5)
+edit_btn.pack(side=tk.LEFT, padx=5)
+remove_btn.pack(side=tk.LEFT, padx=5)
+cancel_btn.pack(side=tk.LEFT, padx=5)
+confirm_btn.pack(side=tk.LEFT, padx=5)
+select_subjects_btn.pack(side=tk.LEFT, padx=5)
+save_csv_btn.pack(side=tk.LEFT, padx=5)
+
+sep2 = ttk.Separator(tab1, orient='horizontal')
+sep2.pack(fill='x', pady=15)
+
+run_scheduler_btn = tk.Button(tab1, text="RUN SCHEDULER", bg="#343a40", fg="white", width=25, height=2)
+exit_btn = tk.Button(tab1, text="Exit", width=10, height=2)
+run_scheduler_btn.pack(side=tk.LEFT, padx=10)
+exit_btn.pack(side=tk.RIGHT, padx=10)
+
+# Tab 2: Outputs
+output_title = tk.Label(tab2, text="Output Visualization", font=("Arial", 16, "bold"))
+output_title.pack(pady=10)
+
+output_course_select = ttk.Combobox(tab2, values=course_codes, state="readonly")
+output_course_select.set(default_course)
+output_course_select.pack(pady=5)
+
+output_table_frame = tk.Frame(tab2)
+output_table_frame.pack(fill=tk.BOTH, expand=True)
+output_table = ttk.Treeview(output_table_frame, columns=placeholder_headings, show="headings", height=10)
+output_table.pack(fill=tk.BOTH, expand=True)
 
 # --- Edit Mode State ---
 edit_mode = False
 selected_index = None
 
-
-
 def refresh_ui():
-    window["-CAT_DISPLAY-"].update(current_cat)
-    window["-COURSE_DISPLAY-"].update(f"({current_course})" if current_cat in ["Courses", "Enrollment"] else "")
-    window["-COURSE_SELECT-"].update(visible=current_cat in ["Courses", "Enrollment"], disabled=edit_mode)
+    current_cat_label.config(text=current_cat)
+    current_course_label.config(text=f"({current_course})" if current_cat in ["Courses", "Enrollment"] else "")
+    course_select.config(state="disabled" if edit_mode else "readonly")
+    course_select.pack_forget() if not (current_cat in ["Courses", "Enrollment"]) else course_select.pack(side=tk.LEFT, padx=5)
 
     # --- Update table headings and data ---
     if current_cat in ["Courses", "Enrollment"]:
@@ -313,304 +313,339 @@ def refresh_ui():
         current_headings = get_schema(current_cat)
         data = raw_data_storage[current_cat]
     num_cols = len(current_headings)
-    padded_headings = current_headings + [" " * (i + 1) for i in range(MAX_COLS - num_cols)]
 
-    padded_data = []
+    # Clear table
+    for item in table.get_children():
+        table.delete(item)
+    # Set headings
+    for i, heading in enumerate(current_headings):
+        table.heading(i, text=heading)
+        table.column(i, width=120, minwidth=40)
+    for i in range(num_cols, MAX_COLS):
+        table.heading(i, text="")
+        table.column(i, width=0)
+
+    # Insert data
     for row in data:
         padded_row = list(row) + [""] * (MAX_COLS - len(row))
-        padded_data.append(padded_row)
+        table.insert("", tk.END, values=padded_row)
 
-    window["-TABLE-"].update(values=padded_data)
+    # --- Reset form scroll ---
+    form_scroll.yview_moveto(0)
 
-    try:
-        tv = window["-TABLE-"].Widget
-        for i, heading in enumerate(padded_headings):
-            col_id = f"#{i + 1}"
-            tv.heading(col_id, text=heading)
-            if i >= num_cols:
-                tv.column(col_id, width=0, minwidth=0, stretch=False)
-            else:
-                tv.column(col_id, width=120, minwidth=40, stretch=True)
-    except Exception:
-        pass
-
-    # --- Reset form scroll to top ---
-    try:
-        window["-FORM-SCROLL-"].Widget.canvas.yview_moveto(0)
-    except Exception:
-        pass
-
-    # --- Show/hide field slots based on current category ---
-    current_labels = current_headings
+    # --- Show/hide field slots ---
     for i in range(MAX_COLS):
-        if i < len(current_labels):
-            label_text = current_labels[i]
-            window[f"-L{i}-"].update(value=label_text)
-            window[f"-COL{i}-"].update(visible=True)
+        if i < len(current_headings):
+            label_text = current_headings[i]
+            fields[i][0].config(text=label_text)
+            fields[i][0].pack(pady=(8,2))
             opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             if opts:
-                window[f"-I{i}-"].update(value="", visible=False)
-                window[f"-C{i}-"].update(values=opts, value=opts[0], visible=True)
-                window[f"-CHK{i}-"].update(visible=False)
+                fields[i][1].pack_forget()
+                fields[i][2].config(values=opts)
+                fields[i][2].set(opts[0])
+                fields[i][2].pack()
+                fields[i][3].pack_forget()
             elif current_cat == "Teachers" and i == 2:  # Availability checkbox
-                window[f"-I{i}-"].update(visible=False)
-                window[f"-C{i}-"].update(visible=False)
-                window[f"-CHK{i}-"].update(visible=True, value=True if edit_mode and data[selected_index][i] == '1' else False)
+                fields[i][1].pack_forget()
+                fields[i][2].pack_forget()
+                fields[i][3].pack()
             else:
                 readonly = (current_cat == "Teachers" and i == 1)  # Expertise field
-                window[f"-I{i}-"].update(value="", visible=True, readonly=readonly)
-                window[f"-C{i}-"].update(visible=False)
-                window[f"-CHK{i}-"].update(visible=False)
+                fields[i][1].config(state="readonly" if readonly else "normal")
+                fields[i][1].pack()
+                fields[i][2].pack_forget()
+                fields[i][3].pack_forget()
         else:
-            window[f"-COL{i}-"].update(visible=False)
+            fields[i][0].pack_forget()
+            fields[i][1].pack_forget()
+            fields[i][2].pack_forget()
+            fields[i][3].pack_forget()
 
-    # --- Update button visibility based on edit mode ---
-    window["Add Record"].update(visible=not edit_mode)
-    window["Edit Selected"].update(visible=not edit_mode)
-    window["Remove Selected"].update(visible=not edit_mode)
-    window["Cancel"].update(visible=edit_mode)
-    window["Confirm"].update(visible=edit_mode)
-    window["SAVE TO CSV"].update(visible=not edit_mode)
-    window["-SELECT_SUBJECTS-"].update(visible=current_cat == "Teachers")
+    # --- Update button visibility ---
+    add_btn.pack_forget() if edit_mode else add_btn.pack(side=tk.LEFT, padx=5)
+    edit_btn.pack_forget() if edit_mode else edit_btn.pack(side=tk.LEFT, padx=5)
+    remove_btn.pack_forget() if edit_mode else remove_btn.pack(side=tk.LEFT, padx=5)
+    cancel_btn.pack_forget() if not edit_mode else cancel_btn.pack(side=tk.LEFT, padx=5)
+    confirm_btn.pack_forget() if not edit_mode else confirm_btn.pack(side=tk.LEFT, padx=5)
+    save_csv_btn.pack_forget() if edit_mode else save_csv_btn.pack(side=tk.LEFT, padx=5)
+    select_subjects_btn.pack_forget() if current_cat != "Teachers" else select_subjects_btn.pack(side=tk.LEFT, padx=5)
 
     # --- Populate form if in edit mode ---
     if edit_mode and selected_index is not None and selected_index < len(data):
         row = data[selected_index]
-        for i in range(len(current_labels)):
-            label_text = current_labels[i]
+        for i in range(len(current_headings)):
+            label_text = current_headings[i]
             opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             if opts:
-                window[f"-C{i}-"].update(value=row[i])
+                fields[i][2].set(row[i])
             elif current_cat == "Teachers" and i == 2:
-                window[f"-CHK{i}-"].update(value=row[i] == '1')
+                fields[i][4].set(row[i] == '1')
             else:
-                window[f"-I{i}-"].update(value=row[i])
+                fields[i][1].delete(0, tk.END)
+                fields[i][1].insert(0, row[i])
 
-    # Force the scrollable canvas to recompute its scroll region
-    try:
-        canvas = window["-FORM-SCROLL-"].Widget.canvas
-        canvas.update_idletasks()
-        canvas.configure(scrollregion=canvas.bbox("all"))
-    except Exception:
-        pass
+    # Update scroll region
+    form_inner.update_idletasks()
+    form_scroll.config(scrollregion=form_scroll.bbox("all"))
 
 # --- Initial Data Load ---
-raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
-raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
-raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
-raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
-
-refresh_ui()
-
-# Initial output load
-headers, data = load_output_csv(default_course)
-num_cols = len(headers)
-padded_headings = headers + [" " * (i + 1) for i in range(MAX_COLS - num_cols)]
-padded_data = []
-for row in data:
-    padded_row = list(row) + [""] * (MAX_COLS - len(row))
-    padded_data.append(padded_row)
-window["-OUTPUT_TABLE-"].update(values=padded_data)
 try:
-    tv = window["-OUTPUT_TABLE-"].Widget
-    for i, heading in enumerate(padded_headings):
-        col_id = f"#{i + 1}"
-        tv.heading(col_id, text=heading)
-        if i >= num_cols:
-            tv.column(col_id, width=0, minwidth=0, stretch=False)
+    raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
+    raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
+    raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
+    raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
+
+    refresh_ui()
+
+    # Initial output load
+    headers, data = load_output_csv(default_course)
+    num_cols = min(len(headers), MAX_COLS)
+    headers = headers[:num_cols]
+    # Clear output table
+    for item in output_table.get_children():
+        output_table.delete(item)
+    # Set headings
+    for i, heading in enumerate(headers):
+        output_table.heading(i, text=heading)
+        output_table.column(i, width=120, minwidth=40)
+    for i in range(num_cols, MAX_COLS):
+        output_table.heading(i, text="")
+        output_table.column(i, width=0)
+    # Insert data
+    for row in data:
+        padded_row = (list(row) + [""] * MAX_COLS)[:MAX_COLS]
+        output_table.insert("", tk.END, values=padded_row)
+except Exception as e:
+    messagebox.showerror("Error", f"Failed to load data: {e}")
+
+# --- Event Handlers ---
+def manage_teachers():
+    global current_cat, edit_mode, selected_index
+    current_cat = "Teachers"
+    edit_mode = False
+    selected_index = None
+    refresh_ui()
+
+def manage_rooms():
+    global current_cat, edit_mode, selected_index
+    current_cat = "Rooms"
+    edit_mode = False
+    selected_index = None
+    refresh_ui()
+
+def manage_courses():
+    global current_cat, edit_mode, selected_index
+    current_cat = "Courses"
+    edit_mode = False
+    selected_index = None
+    refresh_ui()
+
+def manage_enrollment():
+    global current_cat, edit_mode, selected_index
+    current_cat = "Enrollment"
+    edit_mode = False
+    selected_index = None
+    refresh_ui()
+
+def course_select_changed(event):
+    global current_course
+    if current_cat in ["Courses", "Enrollment"] and not edit_mode:
+        current_course = course_select.get()
+        refresh_ui()
+
+def load_saved_progress():
+    global raw_data_storage
+    raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
+    raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
+    raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
+    raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
+    refresh_ui()
+    messagebox.showinfo("Data Restored", "Data Restored.")
+
+def add_record():
+    if current_cat in ["Courses", "Enrollment"]:
+        schema_fields = get_schema(current_cat, current_course)
+    else:
+        schema_fields = get_schema(current_cat)
+    row_data = []
+    for i in range(len(schema_fields)):
+        label = schema_fields[i]
+        opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
+        if opts:
+            val = fields[i][2].get()
+        elif current_cat == "Teachers" and i == 2:
+            val = '1' if fields[i][4].get() else '0'
         else:
-            tv.column(col_id, width=120, minwidth=40, stretch=True)
-except Exception:
-    pass
+            val = fields[i][1].get()
+        row_data.append(val)
 
-while True:
-    event, values = window.read()
-
-    if event in (sg.WIN_CLOSED, "Exit"):
-        break
-
-    if event in ["Manage Teachers", "Manage Rooms", "Manage Courses", "Manage Enrollment"]:
-        current_cat = event.split(" ")[1]
-        edit_mode = False
-        selected_index = None
-        refresh_ui()
-
-    if event == "-COURSE_SELECT-":
-        if current_cat in ["Courses", "Enrollment"] and not edit_mode:
-            current_course = values["-COURSE_SELECT-"]
-            refresh_ui()
-
-    if event == "Load Saved Progress":
-        raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
-        raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
-        raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
-        raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
-        refresh_ui()
-        sg.popup_quick_message("Data Restored.")
-
-    if event == "Add Record":
+    if any(str(v).strip() for v in row_data):
         if current_cat in ["Courses", "Enrollment"]:
-            schema_fields = get_schema(current_cat, current_course)
+            raw_data_storage[current_cat].setdefault(current_course, []).append(row_data)
         else:
-            schema_fields = get_schema(current_cat)
-        row_data = []
-        for i in range(len(schema_fields)):
-            label = schema_fields[i]
-            opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
-            if opts:
-                val = values[f"-C{i}-"]
-            elif current_cat == "Teachers" and i == 2:
-                val = '1' if values[f"-CHK{i}-"] else '0'
-            else:
-                val = values[f"-I{i}-"]
-            row_data.append(val)
+            raw_data_storage[current_cat].append(row_data)
+        refresh_ui()
+        # Clear plain text inputs
+        for i in range(MAX_COLS):
+            if fields[i][1].winfo_ismapped():
+                fields[i][1].delete(0, tk.END)
+    else:
+        messagebox.showerror("Error", "Fields are empty!")
 
-        if any(str(v).strip() for v in row_data):
-            if current_cat in ["Courses", "Enrollment"]:
-                raw_data_storage[current_cat].setdefault(current_course, []).append(row_data)
-            else:
-                raw_data_storage[current_cat].append(row_data)
-            refresh_ui()
-            # Clear plain text inputs only
-            for i in range(MAX_COLS):
-                try:
-                    if window[f"-I{i}-"].visible:
-                        window[f"-I{i}-"].update("")
-                except Exception:
-                    pass
+def edit_selected():
+    selected = table.selection()
+    if not selected:
+        messagebox.showerror("Error", "No row selected!")
+    else:
+        global edit_mode, selected_index
+        edit_mode = True
+        selected_index = table.index(selected[0])
+        refresh_ui()
+
+def remove_selected():
+    selected = table.selection()
+    if selected:
+        indices = sorted([table.index(item) for item in selected], reverse=True)
+        if current_cat in ["Courses", "Enrollment"]:
+            data_list = raw_data_storage[current_cat][current_course]
+            for idx in indices:
+                if idx < len(data_list):
+                    data_list.pop(idx)
         else:
-            sg.popup_error("Fields are empty!")
+            data_list = raw_data_storage[current_cat]
+            for idx in indices:
+                if idx < len(data_list):
+                    data_list.pop(idx)
+        refresh_ui()
 
-    if event == "Edit Selected":
-        selected = values["-TABLE-"]
-        if not selected:
-            sg.popup_error("No row selected!")
-        else:
-            edit_mode = True
-            selected_index = selected[0]
-            refresh_ui()
+def select_subjects():
+    all_subjects = sorted(get_field_options("subject"))
+    current_expertise = fields[1][1].get().strip()
+    if current_expertise:
+        pre_selected = [s.strip() for s in current_expertise.split(",")]
+    else:
+        pre_selected = []
 
-    if event == "Remove Selected":
-        selected = values["-TABLE-"]
+    subject_window = tk.Toplevel(root)
+    subject_window.title("Select Subjects")
+    listbox = tk.Listbox(subject_window, selectmode=tk.MULTIPLE, height=10, width=50)
+    for subject in all_subjects:
+        listbox.insert(tk.END, subject)
+        if subject in pre_selected:
+            listbox.selection_set(listbox.size() - 1)
+    listbox.pack(pady=10)
+
+    def ok():
+        selected = [listbox.get(i) for i in listbox.curselection()]
         if selected:
-            # Sort indices in descending order to remove from highest index first
-            selected_indices = sorted(selected, reverse=True)
-            if current_cat in ["Courses", "Enrollment"]:
-                data_list = raw_data_storage[current_cat][current_course]
-                for idx in selected_indices:
-                    if idx < len(data_list):
-                        data_list.pop(idx)
-            else:
-                data_list = raw_data_storage[current_cat]
-                for idx in selected_indices:
-                    if idx < len(data_list):
-                        data_list.pop(idx)
-            refresh_ui()
+            expertise_str = ", ".join(selected)
+            fields[1][1].delete(0, tk.END)
+            fields[1][1].insert(0, expertise_str)
+        subject_window.destroy()
 
-    if event == "-SELECT_SUBJECTS-":
-        all_subjects = sorted(get_field_options("subject"))
-        current_expertise = values.get("-I1-", "").strip()
-        if current_expertise:
-            pre_selected = [s.strip() for s in current_expertise.split(",")]
+    def cancel():
+        subject_window.destroy()
+
+    btn_frame = tk.Frame(subject_window)
+    btn_frame.pack()
+    tk.Button(btn_frame, text="OK", command=ok).pack(side=tk.LEFT, padx=5)
+    tk.Button(btn_frame, text="Cancel", command=cancel).pack(side=tk.LEFT, padx=5)
+
+def cancel_edit():
+    global edit_mode, selected_index
+    edit_mode = False
+    selected_index = None
+    refresh_ui()
+
+def confirm_edit():
+    global edit_mode, selected_index
+    if current_cat in ["Courses", "Enrollment"]:
+        schema_fields = get_schema(current_cat, current_course)
+    else:
+        schema_fields = get_schema(current_cat)
+    row_data = []
+    for i in range(len(schema_fields)):
+        label = schema_fields[i]
+        opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
+        if opts:
+            val = fields[i][2].get()
+        elif current_cat == "Teachers" and i == 2:
+            val = '1' if fields[i][4].get() else '0'
         else:
-            pre_selected = []
-        layout_subjects = [
-            [sg.Text("Select Subjects for Expertise:")],
-            [sg.Listbox(all_subjects, size=(50, 10), select_mode='multiple', key='-SUBJECT_LIST-', default_values=pre_selected)],
-            [sg.Button("OK"), sg.Button("Cancel")]
-        ]
-        subject_window = sg.Window("Select Subjects", layout_subjects, modal=True)
-        while True:
-            event_sub, values_sub = subject_window.read()
-            if event_sub in (sg.WIN_CLOSED, "Cancel"):
-                break
-            if event_sub == "OK":
-                selected_subjects = values_sub['-SUBJECT_LIST-']
-                if selected_subjects:
-                    expertise_str = ", ".join(selected_subjects)
-                    window["-I1-"].update(value=expertise_str)
-                break
-        subject_window.close()
+            val = fields[i][1].get()
+        row_data.append(val)
 
-    if event == "Cancel":
+    if any(str(v).strip() for v in row_data):
+        if current_cat in ["Courses", "Enrollment"]:
+            raw_data_storage[current_cat][current_course][selected_index] = row_data
+        else:
+            raw_data_storage[current_cat][selected_index] = row_data
+        # Save to CSV
+        if current_cat in ["Courses", "Enrollment"]:
+            save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
+            messagebox.showinfo("Saved", f"{current_course} {current_cat.lower()} data saved.")
+        else:
+            save_to_raw_csv(current_cat, raw_data_storage[current_cat])
+            messagebox.showinfo("Saved", f"{current_cat} data saved.")
         edit_mode = False
         selected_index = None
         refresh_ui()
+    else:
+        messagebox.showerror("Error", "Fields are empty!")
 
-    if event == "Confirm":
-        if current_cat in ["Courses", "Enrollment"]:
-            schema_fields = get_schema(current_cat, current_course)
-        else:
-            schema_fields = get_schema(current_cat)
-        row_data = []
-        for i in range(len(schema_fields)):
-            label = schema_fields[i]
-            opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
-            if opts:
-                val = values[f"-C{i}-"]
-            elif current_cat == "Teachers" and i == 2:
-                val = '1' if values[f"-CHK{i}-"] else '0'
-            else:
-                val = values[f"-I{i}-"]
-            row_data.append(val)
+def save_to_csv():
+    save_to_raw_csv("Teachers", raw_data_storage["Teachers"])
+    save_to_raw_csv("Rooms", raw_data_storage["Rooms"])
+    for course_code in course_codes:
+        if course_code in raw_data_storage["Courses"]:
+            save_to_raw_csv("Courses", raw_data_storage["Courses"][course_code], course_code)
+        if course_code in raw_data_storage["Enrollment"]:
+            save_to_raw_csv("Enrollment", raw_data_storage["Enrollment"][course_code], course_code)
+    messagebox.showinfo("Saved", "All changes saved to CSVs.")
 
-        if any(str(v).strip() for v in row_data):
-            if current_cat in ["Courses", "Enrollment"]:
-                raw_data_storage[current_cat][current_course][selected_index] = row_data
-            else:
-                raw_data_storage[current_cat][selected_index] = row_data
-            # Save to CSV
-            if current_cat in ["Courses", "Enrollment"]:
-                save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
-                sg.popup("Saved", f"{current_course} {current_cat.lower()} data saved.")
-            else:
-                save_to_raw_csv(current_cat, raw_data_storage[current_cat])
-                sg.popup("Saved", f"{current_cat} data saved.")
-            edit_mode = False
-            selected_index = None
-            refresh_ui()
-        else:
-            sg.popup_error("Fields are empty!")
+def output_course_changed(event):
+    selected_course = output_course_select.get()
+    headers, data = load_output_csv(selected_course)
+    num_cols = min(len(headers), MAX_COLS)
+    headers = headers[:num_cols]
+    # Clear output table
+    for item in output_table.get_children():
+        output_table.delete(item)
+    # Set headings
+    for i, heading in enumerate(headers):
+        output_table.heading(i, text=heading)
+        output_table.column(i, width=120, minwidth=40)
+    for i in range(num_cols, MAX_COLS):
+        output_table.heading(i, text="")
+        output_table.column(i, width=0)
+    # Insert data
+    for row in data:
+        padded_row = (list(row) + [""] * MAX_COLS)[:MAX_COLS]
+        output_table.insert("", tk.END, values=padded_row)
 
-    if event == "SAVE TO CSV":
-        # Save all data to CSVs
-        save_to_raw_csv("Teachers", raw_data_storage["Teachers"])
-        save_to_raw_csv("Rooms", raw_data_storage["Rooms"])
-        for course_code in course_codes:
-            if course_code in raw_data_storage["Courses"]:
-                save_to_raw_csv("Courses", raw_data_storage["Courses"][course_code], course_code)
-            if course_code in raw_data_storage["Enrollment"]:
-                save_to_raw_csv("Enrollment", raw_data_storage["Enrollment"][course_code], course_code)
-        sg.popup("All changes saved to CSVs.")
+def run_scheduler():
+    # Placeholder for running the scheduler
+    messagebox.showinfo("Run Scheduler", "Scheduler not implemented yet.")
 
-    if event == "-OUTPUT_COURSE_SELECT-":
-        selected_course = values["-OUTPUT_COURSE_SELECT-"]
-        headers, data = load_output_csv(selected_course)
-        num_cols = len(headers)
-        padded_headings = headers + [" " * (i + 1) for i in range(MAX_COLS - num_cols)]
-        padded_data = []
-        for row in data:
-            padded_row = list(row) + [""] * (MAX_COLS - len(row))
-            padded_data.append(padded_row)
-        window["-OUTPUT_TABLE-"].update(values=padded_data)
-        try:
-            tv = window["-OUTPUT_TABLE-"].Widget
-            for i, heading in enumerate(padded_headings):
-                col_id = f"#{i + 1}"
-                tv.heading(col_id, text=heading)
-                if i >= num_cols:
-                    tv.column(col_id, width=0, minwidth=0, stretch=False)
-                else:
-                    tv.column(col_id, width=120, minwidth=40, stretch=True)
-        except Exception:
-            pass
+def exit_app():
+    root.quit()
 
-    if event == "-TAB_BTN1-":
-        window["-TAB1-"].update(visible=True)
-        window["-TAB2-"].update(visible=False)
+# Bind events
+manage_teachers_btn.config(command=manage_teachers)
+manage_rooms_btn.config(command=manage_rooms)
+manage_courses_btn.config(command=manage_courses)
+manage_enrollment_btn.config(command=manage_enrollment)
+course_select.bind("<<ComboboxSelected>>", course_select_changed)
+load_progress_btn.config(command=load_saved_progress)
+add_btn.config(command=add_record)
+edit_btn.config(command=edit_selected)
+remove_btn.config(command=remove_selected)
+select_subjects_btn.config(command=select_subjects)
+cancel_btn.config(command=cancel_edit)
+confirm_btn.config(command=confirm_edit)
+save_csv_btn.config(command=save_to_csv)
+output_course_select.bind("<<ComboboxSelected>>", output_course_changed)
+exit_btn.config(command=exit_app)
 
-    if event == "-TAB_BTN2-":
-        window["-TAB1-"].update(visible=False)
-        window["-TAB2-"].update(visible=True)
-
-window.close()
+root.mainloop()
