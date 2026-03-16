@@ -1,17 +1,17 @@
-teacher,expertise
-Juan Santos,"ProgFund, SoftEng, AdvProg, BigData"
-Maria DelaCruz,"NetSec, CompArch, CyberSec"
-Carlos Ramirez,"SysDev, CloudComp, IoTSystems"
-Ana Villanueva,"DatMan, AIIntro, UXDesign, DataAnalytics"
-Jose Hernandez,"WebDev, ITProjMgmt, MobileDev, ITStrategy"
-Luis Bautista,"OSFund"
-Pedro Cruz,"FinMgmt, EntLaw, BusEthics"
-Rosa Reyes,"BusComm, MarkStrat, EcoTheory"
-Miguel Mendoza,"AcctFund, AdvAcct, CostAcc"
-Elena Garcia,"MarkIntro, HRMgmt, Investments"
-Laura Lopez,"EntPlan, InnMgmt, MarketRes, GrowthStrat"
-Diego Castillo,"BusMod, StartOps, ProdDev, SupplyChain"
-Sofia Navarro,"VentCap, SalesStrat, InnovationLab"
-Antonio Aquino,"AccSys, Auditing, GovAcc, BusLaw"
-Ricardo Ramos,"FinAcc, Taxation, CorpAcc, MgmtAcc"
-Isabel Flores,"ChildDev, EduPsy, DataCommLec"
+teacher,expertise,availability
+"Juan Santos","ProgFund, SoftEng, AdvProg, BigData",1
+"Maria DelaCruz","NetSec, CompArch, CyberSec",1
+"Carlos Ramirez","SysDev, CloudComp, IoTSystems",1
+"Ana Villanueva","DatMan, AIIntro, UXDesign, DataAnalytics",1
+"Jose Hernandez","WebDev, ITProjMgmt, MobileDev, ITStrategy",1
+"Luis Bautista","OSFund",1
+"Pedro Cruz","FinMgmt, EntLaw, BusEthics",1
+"Rosa Reyes","BusComm, MarkStrat, EcoTheory",1
+"Miguel Mendoza","AcctFund, AdvAcct, CostAcc",1
+"Elena Garcia","MarkIntro, HRMgmt, Investments",1
+"Laura Lopez","EntPlan, InnMgmt, MarketRes, GrowthStrat",1
+"Diego Castillo","BusMod, StartOps, ProdDev, SupplyChain",1
+"Sofia Navarro","VentCap, SalesStrat, InnovationLab",1
+"Antonio Aquino","AccSys, Auditing, GovAcc, BusLaw",1
+"Ricardo Ramos","FinAcc, Taxation, CorpAcc, MgmtAcc",1
+"Isabel Flores","ChildDev, EduPsy, DataCommLec",1
