@@ -184,8 +184,10 @@ def select_subjects():
         selected = [listbox.get(i) for i in listbox.curselection()]
         if selected:
             expertise_str = ", ".join(selected)
+            fields[1][2].config(state="normal")
             fields[1][2].delete(0, tk.END)
             fields[1][2].insert(0, expertise_str)
+            fields[1][2].config(state="readonly")
         subject_window.destroy()
 
     def cancel():
@@ -414,8 +416,14 @@ def refresh_ui():
             elif current_cat == "Teachers" and i == 2:
                 fields[i][5].set(row[i] == '1')
             else:
-                fields[i][2].delete(0, tk.END)
-                fields[i][2].insert(0, row[i])
+                if current_cat == "Teachers" and i == 1:
+                    fields[i][2].config(state="normal")
+                    fields[i][2].delete(0, tk.END)
+                    fields[i][2].insert(0, row[i])
+                    fields[i][2].config(state="readonly")
+                else:
+                    fields[i][2].delete(0, tk.END)
+                    fields[i][2].insert(0, row[i])
 
     # Update scroll region
     form_inner.update_idletasks()
