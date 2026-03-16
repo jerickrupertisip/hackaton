@@ -252,12 +252,8 @@ load_progress_btn.pack(side=tk.LEFT, padx=5)
 sep1 = ttk.Separator(tab1, orient='horizontal')
 sep1.pack(fill='x', pady=15)
 
-current_label = tk.Label(tab1, text="Currently Editing: ", font=("Arial", 10, "italic"))
-current_cat_label = tk.Label(tab1, text="Teachers", fg="#1a73e8", font=("Arial", 11, "bold"))
-current_course_label = tk.Label(tab1, text="", fg="#e6731a", font=("Arial", 11, "bold"))
-current_label.pack(side=tk.LEFT)
-current_cat_label.pack(side=tk.LEFT)
-current_course_label.pack(side=tk.LEFT)
+current_display = tk.Label(tab1, text="Currently Editing: Teachers", font=("Arial", 10, "italic"))
+current_display.pack(pady=5, anchor='center')
 
 # Table
 table_frame = tk.Frame(tab1)
@@ -338,8 +334,7 @@ edit_mode = False
 selected_index = None
 
 def refresh_ui():
-    current_cat_label.config(text=current_cat)
-    current_course_label.config(text=f"({current_course})" if current_cat in ["Courses", "Enrollment"] else "")
+    current_display.config(text=f"Currently Editing: {current_cat} ({current_course})" if current_cat in ["Courses", "Enrollment"] else f"Currently Editing: {current_cat}")
     course_select.config(state="disabled" if edit_mode else "readonly")
     course_select.pack_forget() if not (current_cat in ["Courses", "Enrollment"]) else course_select.pack(side=tk.LEFT, padx=5)
 
