@@ -12,7 +12,6 @@
   - Science Lab: for science related.
   - Computer Lab: for IT or technical subjects.
   - Online: if the current modality is online, then there is no room in that schedule.
-- Capacity: variable $V_{roomCapacity}$ is a numeric capacity value.
 
 Rooms Setup:
 - Computer Lab: Is located in any floors
@@ -28,8 +27,7 @@ Rooms Setup:
 ### Section
 
 Section identifier format: `<course>-<year-level><section>`
-- section are procedurally generated, based on the number of student in the course
-    - possible calculation $total_students_for_course_year_semester > s_max_section_size * current_sections$ (adjust if needed)
+- sections are generated from the enrollment totals in `./data/enrollment/<course>.csv` — each row (year, semester) provides `total_students`, and the scheduler computes required sections from that value using the formula $\lceil \text{totalStudent} / R_{roomMaxCapacity} \rceil = \text{totalSections}$.
 - For example: BSIT-105, BSIT-205, BSIT-107, BSIT-307
 
 ## Subject ($S$)
@@ -87,7 +85,6 @@ Subject Setup:
             - ArcOrg and QMethods in Wednesday
             - Rizal in Sunday
 1. Hyflex-aware Room Allocation: when a subject is Hyflex, room allocation and conflict checks must be evaluated per calendar week according to the Hyflex pattern. Room occupancy and conflicts should be resolved with awareness of the Hyflex weekly modality pattern.
-1. Room Capacity Limit: room assignments must not exceed $V_{roomCapacity}$ (maximum of 30).
 1. Teacher Availability: all scheduled classes must align with the teacher's $V_{teacherAvailability}$.
 
 ---
@@ -101,6 +98,7 @@ Subject Setup:
 | $r_{roomsPerFloor}$ | Total rooms per floor level. | User defined |
 | $m_{modalityRatio}$ | Ratio of Online vs Face-to-Face for Single subjects. | Percentage (for example, 30/70) |
 | $e_{emptyDays}$ | Number of days which not a single subject in section is not scheduled | 1-2 days |
+| $R_{roomMaxCapacity}$ | Number of students allowed in Room | 30 (Fixed) |
 
 ## CSV Input and Output Formats
 
