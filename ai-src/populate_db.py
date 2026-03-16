@@ -125,20 +125,12 @@ def main():
     base = os.path.dirname(__file__)
     db_path = os.path.join(base, 'data', 'local.db')
     data_dir = os.path.join(base, 'data')
-    schema_path = os.path.join(base, 'sql', 'schema.sql')
     courses_dir = os.path.join(data_dir, 'courses')
     enroll_dir = os.path.join(data_dir, 'enrollment')
     rooms_csv = os.path.join(data_dir, 'rooms.csv')
     teachers_csv = os.path.join(data_dir, 'teachers.csv')
 
-    # Remove existing db to start fresh
-    if os.path.exists(db_path):
-        os.remove(db_path)
-
     conn = get_db_connection(db_path)
-
-    # Create schema
-    create_schema(conn, schema_path)
 
     # Canonical values
     insert_room_categories(conn, ['Regular', 'Science Lab', 'Computer Lab', 'Online'])

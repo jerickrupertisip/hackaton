@@ -1,7 +1,7 @@
-# Academic Scheduling System CSP Solver
 import csv
 import os
 import math
+import random
 from collections import defaultdict
 from typing import List, Dict, Any, Optional
 
@@ -174,6 +174,7 @@ def main():
 	# Helper: Get next available time slot for a section
 	def get_next_slot(section_schedule):
 		max_per_day = 3  # Allow up to 3 subjects per day for balanced distribution
+		available_slots = []
 		for day in DAYS:
 			day_subjects = [s for s in section_schedule if s['day'] == day]
 			if len(day_subjects) < max_per_day:
@@ -181,18 +182,20 @@ def main():
 				t = START_HOUR
 				while t + SLOT_LENGTH <= END_HOUR:
 					if t not in slots:
-						return day, t
+						available_slots.append((day, t))
 					t += SLOT_LENGTH
+		if available_slots:
+			return random.choice(available_slots)
 		return None, None
 
 	# Main scheduling loop
 	output_dir = os.path.join(os.path.dirname(__file__), 'output')
 	os.makedirs(output_dir, exist_ok=True)
+	used_teachers = set()  # Global across all sections
+	used_rooms = set()     # Global across all sections
 	for course, sec_list in sections.items():
 		for sec in sec_list:
 			section_schedule = []
-			used_teachers = set()
-			used_rooms = set()
 			for subj in sec.subjects:
 				# Assign day and time
 				day, start_time = get_next_slot(section_schedule)
