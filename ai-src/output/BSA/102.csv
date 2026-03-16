@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-MgmtAcc,3.0,Wednesday,18:00,19:30,TBA,f2f,Ricardo Ramos
-CorpAccLec,2.0,Thursday,18:00,19:30,Online,online,Isabel Flores
-GovAcc,3.0,Tuesday,9:00,10:30,TBA,hyflex_a,Antonio Aquino
-BusLawLec,1.5,Saturday,7:30,9:00,Online,online,Carlos Lim
-AcctInfoSys,2.0,Tuesday,10:30,12:00,Lab 1,hyflex_b,Miguel Mendoza
+MgmtAcc,3.0,Friday,12:00,13:30,TBA,f2f,Ricardo Ramos
+CorpAccLec,2.0,Wednesday,13:30,15:00,Online,online,Oscar Lim
+GovAcc,3.0,Saturday,18:00,19:30,TBA,hyflex_a,Antonio Aquino
+BusLawLec,1.5,Thursday,10:30,12:00,Online,online,Carlos Lim
+AcctInfoSys,2.0,Friday,15:00,16:30,Lab 3,hyflex_b,Miguel Mendoza

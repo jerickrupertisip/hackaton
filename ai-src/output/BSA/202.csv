@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-ForensicAcc,3.0,Tuesday,19:30,21:00,2C,f2f,Antonio Aquino
-IntlAccLec,2.0,Wednesday,12:00,13:30,Online,online,Fiona Lee
-AcctResearch,3.0,Tuesday,18:00,19:30,TBA,hyflex_a,Maria DelaCruz
-FinReportingLec,1.5,Saturday,9:00,10:30,Online,online,Isabel Flores
-AcctAnalysis,2.0,Tuesday,13:30,15:00,TBA,hyflex_b,Miguel Mendoza
+ForensicAcc,3.0,Thursday,12:00,13:30,1F,f2f,Antonio Aquino
+IntlAccLec,2.0,Tuesday,10:30,12:00,Online,online,Fiona Lee
+AcctResearch,3.0,Thursday,16:30,18:00,TBA,hyflex_a,Maria DelaCruz
+FinReportingLec,1.5,Tuesday,9:00,10:30,Online,online,Isabel Flores
+AcctAnalysis,2.0,Monday,16:30,18:00,TBA,hyflex_b,Miguel Mendoza

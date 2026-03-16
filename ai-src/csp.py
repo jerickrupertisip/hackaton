@@ -109,7 +109,7 @@ def validate_csvs(rooms, teachers, courses, enrollments):
 				raise ValueError(f"Enrollment for {course} year {e['year']} sem {e['semester']} is invalid.")
 
 # --- Main Scheduling Entrypoint ---
-def main():
+def generate_schedules():
 	data_dir = os.path.join(os.path.dirname(__file__), 'data')
 	rooms = parse_rooms_csv(os.path.join(data_dir, 'rooms.csv'))
 	teachers = parse_teachers_csv(os.path.join(data_dir, 'teachers.csv'))
@@ -246,4 +246,4 @@ def main():
 	print("Schedules generated and written to output directory.")
 
 if __name__ == '__main__':
-	main()
+	generate_schedules()

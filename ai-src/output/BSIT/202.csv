@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-BigData,2.0,Monday,12:00,13:30,Lab 4,f2f,Juan Santos
-IoTSystemsLec,3.0,Monday,9:00,10:30,1F,online,Diana Tan
-UXDesign,1.5,Wednesday,12:00,13:30,Lab 1,hyflex_a,Ana Villanueva
-DataAnalyticsLec,2.0,Friday,12:00,13:30,Lab 4,online,TBA
-ITStrategy,3.0,Wednesday,15:00,16:30,TBA,hyflex_b,Jose Hernandez
+BigData,2.0,Monday,9:00,10:30,Lab 2,f2f,TBA
+IoTSystemsLec,3.0,Wednesday,15:00,16:30,1F,online,Diana Tan
+UXDesign,1.5,Saturday,18:00,19:30,Lab 2,hyflex_a,Ana Villanueva
+DataAnalyticsLec,2.0,Tuesday,10:30,12:00,Lab 1,online,Bianca Reyes
+ITStrategy,3.0,Saturday,12:00,13:30,TBA,hyflex_b,Jose Hernandez

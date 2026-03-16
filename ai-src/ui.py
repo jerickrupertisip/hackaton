@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import csv
 import os
+from csp import generate_schedules
 
 # --- Dynamic Data Discovery ---
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -616,8 +617,8 @@ def output_course_changed(event):
         output_notebook.add(frame, text=section)
 
 def run_scheduler():
-    # Placeholder for running the scheduler
-    messagebox.showinfo("Run Scheduler", "Scheduler not implemented yet.")
+    generate_schedules()
+    messagebox.showinfo("Success", "Scheduling complete! Check the Outputs tab for results.")
 
 output_course_changed(None)  # Load initial output data
 
@@ -642,6 +643,7 @@ remove_btn.config(command=remove_selected)
 cancel_btn.config(command=cancel_edit)
 confirm_btn.config(command=confirm_edit)
 save_csv_btn.config(command=save_to_csv)
+run_scheduler_btn.config(command=run_scheduler)
 output_course_select.bind("<<ComboboxSelected>>", output_course_changed)
 exit_btn.config(command=exit_app)
 

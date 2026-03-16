@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-SciEd,3.0,Tuesday,10:30,12:00,1F,f2f,Ivan delaPaz
-MusicEdLec,2.0,Monday,15:00,16:30,Online,online,Julia Santos
-ArtEd,3.0,Wednesday,16:30,18:00,TBA,hyflex_a,Ivan delaPaz
-PEdLec,1.5,Wednesday,10:30,12:00,Online,online,Julia Santos
-ValuesEd,2.0,Friday,13:30,15:00,TBA,hyflex_b,Hannah Ong
+SciEd,3.0,Wednesday,13:30,15:00,1F,f2f,Ivan delaPaz
+MusicEdLec,2.0,Friday,13:30,15:00,Online,online,Julia Santos
+ArtEd,3.0,Wednesday,19:30,21:00,TBA,hyflex_a,Ivan delaPaz
+PEdLec,1.5,Tuesday,12:00,13:30,Online,online,Julia Santos
+ValuesEd,2.0,Monday,7:30,9:00,TBA,hyflex_b,Hannah Ong
