@@ -6,15 +6,13 @@
 - Expertise: variable $V_{teacherExpertise}$ is a list of subjects the teacher can teach (for example, WebSys, Rizal, ArchOrg).
 - Availability: variable $V_{teacherAvailability}$ describes the teacher's available time in a week. Each available time is described by Day, StartTime, EndTime and is associated with $V_{schedule}$.
 
-Teacher lunch break: 1-4 hours
-
 ### Rooms ($R$)
 - Categories: variable $R_{roomCategory}$ indicates the room category and may be one of Regular, Science Lab, or Computer Lab.
   - Regular: for lecture or general subjects.
   - Science Lab: for science related.
   - Computer Lab: for IT or technical subjects.
   - Virtual: if the current modality is online, then there is no f2f in that schedule.
-- Capacity: variable $V_{roomCapacity}$ is a numeric capacity value with a maximum of 30.
+- Capacity: variable $V_{roomCapacity}$ is a numeric capacity value.
 
 Rooms Setup:
 - Computer Lab: Is located in any floors
@@ -80,7 +78,7 @@ Subject Setup:
 ## Constraints (The Solver Rules)
 
 1. Section Continuity: each section in $C_{courseSection}$ must not have overlapping $S_{schedule}$.
-1. Teacher Lunch Break: prefer to schedule a break after 3 subjects for teacher.
+1. Teacher Lunch Break: 1-4 hours; prefer to schedule a break after 3 subjects for teacher.
 1. Time Overlap Prevention: no two scheduled time intervals may overlap.
 1. Balanced Distribution: prefer to distribute a section's schedule units evenly across the week while leaving $e_{emptyDays}$ empty days.
 1. School Operation Hours $O_{operatingHours} = (\text{startTime}, \text{endTime})$: all scheduled times must fall within 07:30am and 9:00pm.
@@ -91,6 +89,8 @@ Subject Setup:
             - ArcOrg and QMethods in Wednesday
             - Rizal in Sunday
 1. Hyflex-aware Room Allocation: when a subject is Hyflex, room allocation and conflict checks must be evaluated per calendar week according to the Hyflex pattern. Room occupancy and conflicts should be resolved with awareness of the Hyflex weekly modality pattern.
+1. Room Capacity Limit: room assignments must not exceed $V_{roomCapacity}$ (maximum of 30).
+1. Teacher Availability: all scheduled classes must align with the teacher's $V_{teacherAvailability}$.
 
 ---
 
