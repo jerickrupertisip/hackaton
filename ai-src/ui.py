@@ -444,34 +444,13 @@ def refresh_ui():
     form_scroll.config(scrollregion=form_scroll.bbox("all"))
 
 # --- Initial Data Load ---
-try:
-    raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
-    raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
-    raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
-    raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
 
-    refresh_ui()
+raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
+raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
+raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
+raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
 
-    # Initial output load
-    headers, data = load_output_csv(default_course)
-    num_cols = min(len(headers), MAX_COLS)
-    headers = headers[:num_cols]
-    # Clear output table
-    for item in output_table.get_children():
-        output_table.delete(item)
-    # Set headings
-    for i, heading in enumerate(headers):
-        output_table.heading(i, text=heading)
-        output_table.column(i, width=120, minwidth=40)
-    for i in range(num_cols, MAX_COLS):
-        output_table.heading(i, text="")
-        output_table.column(i, width=0)
-    # Insert data
-    for row in data:
-        padded_row = (list(row) + [""] * MAX_COLS)[:MAX_COLS]
-        output_table.insert("", tk.END, values=padded_row)
-except Exception as e:
-    messagebox.showerror("Error", f"Failed to load data: {e}")
+refresh_ui()
 
 # --- Event Handlers ---
 def manage_teachers():
