@@ -125,12 +125,15 @@ def main():
 	sections = defaultdict(list)  # course -> List[Section]
 	for course, enr_list in enrollments.items():
 		for enr in enr_list:
+			# Only generate sections if there are subjects for this year/semester
+			subjects_for_section = [s for s in courses[course] if s.year == enr['year'] and s.semester == enr['semester']]
+			if not subjects_for_section:
+				continue  # Skip section if no subjects defined
 			n_sections = math.ceil(enr['total_students'] / R_roomMaxCapacity)
 			for i in range(1, n_sections + 1):
 				section_id = f"{course.upper()}-{enr['year']}{str(i).zfill(2)}"
 				section = Section(course, enr['year'], enr['semester'], i, enr['total_students'])
-				# Assign subjects for this year/semester
-				section.subjects = [s for s in courses[course] if s.year == enr['year'] and s.semester == enr['semester']]
+				section.subjects = subjects_for_section
 				sections[course].append(section)
 
 	# --- Scheduling Algorithm ---
