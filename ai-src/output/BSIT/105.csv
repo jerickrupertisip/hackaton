@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-ProgFund,2.0,Thursday,15:00,16:30,Lab 3,f2f,TBA
-NetSecLec,3.0,Tuesday,7:30,9:00,Lab 1,online,Alex Cruz
-SysDev,1.5,Saturday,12:00,13:30,Lab 2,hyflex_a,Carlos Ramirez
-DatManLec,3.0,Saturday,13:30,15:00,Lab 1,online,Bianca Reyes
-WebDev,2.0,Monday,13:30,15:00,Lab 2,hyflex_b,Jose Hernandez
+ProgFund,2.0,Friday,18:00,19:30,Lab 2,f2f,Juan Santos
+NetSecLec,3.0,Monday,16:30,18:00,Lab 1,online,Alex Cruz
+SysDev,1.5,Wednesday,18:00,19:30,Lab 2,hyflex_a,Carlos Ramirez
+DatManLec,3.0,Saturday,15:00,16:30,Lab 2,online,Bianca Reyes
+WebDev,2.0,Thursday,13:30,15:00,Lab 2,hyflex_b,Erik Yu

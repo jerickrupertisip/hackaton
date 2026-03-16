@@ -617,8 +617,10 @@ def output_course_changed(event):
         output_notebook.add(frame, text=section)
 
 def run_scheduler():
+    messagebox.showinfo("Success", "Scheduling complete! Results are now displayed in the Outputs tab.")
     generate_schedules()
-    messagebox.showinfo("Success", "Scheduling complete! Check the Outputs tab for results.")
+    output_course_changed(None)  # Refresh output data
+    tab_control.select(1)  # Switch to Output tab
 
 output_course_changed(None)  # Load initial output data
 
