@@ -336,14 +336,8 @@ output_course_select = ttk.Combobox(tab2, values=course_codes, state="readonly")
 output_course_select.set(default_course)
 output_course_select.pack(pady=5)
 
-output_scroll = tk.Canvas(tab2)
-output_scroll.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-output_scrollbar = ttk.Scrollbar(tab2, orient="vertical", command=output_scroll.yview)
-output_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-output_scroll.configure(yscrollcommand=output_scrollbar.set)
-
-output_inner = tk.Frame(output_scroll)
-output_scroll.create_window((0,0), window=output_inner, anchor="nw")
+output_notebook = ttk.Notebook(tab2)
+output_notebook.pack(fill=tk.BOTH, expand=True)
 
 # --- Edit Mode State ---
 edit_mode = False
@@ -607,22 +601,19 @@ def save_to_csv():
 def output_course_changed(event):
     selected_course = output_course_select.get()
     sections_data = load_output_csv(selected_course)
-    # Clear previous widgets
-    for widget in output_inner.winfo_children():
-        widget.destroy()
+    # Clear previous tabs
+    for tab_id in output_notebook.tabs():
+        output_notebook.forget(tab_id)
     for section, headers, data in sections_data:
-        section_label = tk.Label(output_inner, text=f"Section {section}", font=("Arial", 12, "bold"))
-        section_label.pack(pady=5)
-        table = ttk.Treeview(output_inner, columns=headers, show="headings", height=5)
+        frame = ttk.Frame(output_notebook)
+        table = ttk.Treeview(frame, columns=headers, show="headings", height=15)
         for i, h in enumerate(headers):
             table.heading(i, text=h)
             table.column(i, width=120, minwidth=40)
         for row in data:
             table.insert("", tk.END, values=row)
-        table.pack(pady=5)
-    # Update scroll region
-    output_inner.update_idletasks()
-    output_scroll.configure(scrollregion=output_scroll.bbox("all"))
+        table.pack(fill=tk.BOTH, expand=True)
+        output_notebook.add(frame, text=section)
 
 def run_scheduler():
     # Placeholder for running the scheduler
