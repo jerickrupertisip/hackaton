@@ -8,6 +8,12 @@ def get_db_connection(db_path):
     conn.execute('PRAGMA foreign_keys = ON;')
     return conn
 
+def create_schema(conn, schema_path):
+    with open(schema_path, 'r', encoding='utf-8') as f:
+        schema_sql = f.read()
+    conn.executescript(schema_sql)
+    conn.commit()
+
 def insert_room_categories(conn, categories):
     for cat in categories:
         conn.execute('INSERT OR IGNORE INTO room_category (name) VALUES (?)', (cat,))
@@ -119,12 +125,20 @@ def main():
     base = os.path.dirname(__file__)
     db_path = os.path.join(base, 'data', 'local.db')
     data_dir = os.path.join(base, 'data')
+    schema_path = os.path.join(base, 'sql', 'schema.sql')
     courses_dir = os.path.join(data_dir, 'courses')
     enroll_dir = os.path.join(data_dir, 'enrollment')
     rooms_csv = os.path.join(data_dir, 'rooms.csv')
     teachers_csv = os.path.join(data_dir, 'teachers.csv')
 
+    # Remove existing db to start fresh
+    if os.path.exists(db_path):
+        os.remove(db_path)
+
     conn = get_db_connection(db_path)
+
+    # Create schema
+    create_schema(conn, schema_path)
 
     # Canonical values
     insert_room_categories(conn, ['Regular', 'Science Lab', 'Computer Lab', 'Online'])

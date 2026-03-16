@@ -174,7 +174,7 @@ def main():
 	# Helper: Get next available time slot for a section
 	def get_next_slot(section_schedule):
 		for day in DAYS:
-			slots = [s['start_time'] for s in section_schedule if s['day'] == day]
+			slots = [s['start_time'] for s in section_schedule if s['day'] == day]  # Now floats
 			t = START_HOUR
 			while t + SLOT_LENGTH <= END_HOUR:
 				if t not in slots:
@@ -218,8 +218,8 @@ def main():
 					'subject': subj.subject,
 					'unit': subj.units,
 					'day': day,
-					'start_time': start_str,
-					'end_time': end_str,
+					'start_time': start_time,  # Store as float
+					'end_time': etime,  # Store as float
 					'room': room,
 					'modality': subj.modality,
 					'teacher': teacher
@@ -230,7 +230,11 @@ def main():
 				writer = csv.DictWriter(f, fieldnames=['subject','unit','day','start_time','end_time','room','modality','teacher'])
 				writer.writeheader()
 				for row in section_schedule:
-					writer.writerow(row)
+					# Format times for CSV
+					row_copy = row.copy()
+					row_copy['start_time'] = f"{int(row['start_time'])}:{int((row['start_time'] % 1) * 60):02d}"
+					row_copy['end_time'] = f"{int(row['end_time'])}:{int((row['end_time'] % 1) * 60):02d}"
+					writer.writerow(row_copy)
 	print("Schedules generated and written to output directory.")
 
 if __name__ == '__main__':
