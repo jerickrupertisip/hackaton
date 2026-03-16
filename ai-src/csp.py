@@ -228,7 +228,9 @@ def main():
 					'teacher': teacher
 				})
 			# Write to CSV
-			out_file = os.path.join(output_dir, f"{course.upper()}-{sec.year}{str(sec.section_num).zfill(2)}.csv")
+			course_dir = os.path.join(output_dir, course.upper())
+			os.makedirs(course_dir, exist_ok=True)
+			out_file = os.path.join(course_dir, f"{sec.year}{str(sec.section_num).zfill(2)}.csv")
 			with open(out_file, 'w', newline='', encoding='utf-8') as f:
 				writer = csv.DictWriter(f, fieldnames=['subject','unit','day','start_time','end_time','room','modality','teacher'])
 				writer.writeheader()
