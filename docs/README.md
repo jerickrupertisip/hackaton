@@ -1,4 +1,4 @@
-# Academic Scheduling System Specifications (CSP Revision — Plain English Variables with Math Intact)
+# Academic Scheduling System Specifications
 
 ## Entities and Attributes
 
