@@ -91,7 +91,9 @@ def get_options(field, category, course_code=None):
             return ["1", "2"]
         else:
             return []
-    # For Teachers/Rooms, no dropdowns by default
+    elif category == "Rooms" and field == "category":
+        # Room category dropdown
+        return ["Regular", "Science Lab", "Computer Lab", "Online"]
     return []
 
 def load_output_csv(course_code):
@@ -253,14 +255,12 @@ manage_courses_btn = tk.Button(button_frame, text="Manage Courses")
 manage_enrollment_btn = tk.Button(button_frame, text="Manage Enrollment")
 course_select = ttk.Combobox(button_frame, values=course_codes, state="readonly")
 course_select.set(default_course)
-load_progress_btn = tk.Button(button_frame, text="Load Saved Progress", bg="grey")
 
 manage_teachers_btn.pack(side=tk.LEFT, padx=5)
 manage_rooms_btn.pack(side=tk.LEFT, padx=5)
 manage_courses_btn.pack(side=tk.LEFT, padx=5)
 manage_enrollment_btn.pack(side=tk.LEFT, padx=5)
 course_select.pack(side=tk.LEFT, padx=5)
-load_progress_btn.pack(side=tk.LEFT, padx=5)
 
 sep1 = ttk.Separator(tab1, orient='horizontal')
 sep1.pack(fill='x', pady=15)
@@ -296,7 +296,11 @@ for i in range(MAX_COLS):
     combo = ttk.Combobox(frame, width=43, state="readonly")
     chk_var = tk.BooleanVar()
     chk = tk.Checkbutton(frame, text="Available", variable=chk_var)
-    button = tk.Button(frame, text="Select Subjects", command=select_subjects)
+    # Only show Select Subjects button for Teachers Expertise field
+    if i == 1:
+        button = tk.Button(frame, text="Select Subjects", command=select_subjects)
+    else:
+        button = tk.Label(frame, text="")  # Placeholder, invisible
     entry.pack_forget()
     combo.pack_forget()
     chk.pack_forget()
@@ -313,6 +317,7 @@ remove_btn = tk.Button(button_frame2, text="Remove Selected", bg="#dc3545", widt
 cancel_btn = tk.Button(button_frame2, text="Cancel", bg="#6c757d", width=10)
 confirm_btn = tk.Button(button_frame2, text="Confirm", bg="#007bff", width=10)
 save_csv_btn = tk.Button(button_frame2, text="SAVE TO CSV", bg="#007bff", width=15)
+load_progress_btn = tk.Button(button_frame2, text="Load Saved Progress", bg="grey")
 
 add_btn.pack(side=tk.LEFT, padx=5)
 edit_btn.pack(side=tk.LEFT, padx=5)
@@ -320,6 +325,7 @@ remove_btn.pack(side=tk.LEFT, padx=5)
 cancel_btn.pack(side=tk.LEFT, padx=5)
 confirm_btn.pack(side=tk.LEFT, padx=5)
 save_csv_btn.pack(side=tk.LEFT, padx=5)
+load_progress_btn.pack(side=tk.LEFT, padx=5)
 
 sep2 = ttk.Separator(tab1, orient='horizontal')
 sep2.pack(fill='x', pady=15)
@@ -388,16 +394,19 @@ def refresh_ui():
                 fields[i][3].set(opts[0])
                 fields[i][3].pack(side=tk.LEFT)
                 fields[i][4].pack_forget()
+                fields[i][6].pack_forget()
             elif current_cat == "Teachers" and i == 2:  # Availability checkbox
                 fields[i][2].pack_forget()
                 fields[i][3].pack_forget()
                 fields[i][4].pack(side=tk.LEFT)
+                fields[i][6].pack_forget()
             else:
                 readonly = (current_cat == "Teachers" and i == 1)  # Expertise field
                 fields[i][2].config(state="readonly" if readonly else "normal")
                 fields[i][2].pack(side=tk.LEFT)
                 fields[i][3].pack_forget()
                 fields[i][4].pack_forget()
+                # Show Select Subjects button only for Teachers Expertise field
                 if current_cat == "Teachers" and i == 1:
                     fields[i][6].pack(side=tk.LEFT, padx=5)
                 else:

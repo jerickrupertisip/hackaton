@@ -1,6 +1,6 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-SoftEng,3.0,Tuesday,16:30,18:00,Lab 1,f2f,Juan Santos
-OSFundLec,3.0,Wednesday,13:30,15:00,Online,online,Carlos Lim
-CompArch,2.0,Tuesday,13:30,15:00,1F,hyflex_a,Maria DelaCruz
-DataCommLec,1.5,Friday,10:30,12:00,1F,online,Isabel Flores
-ITProjMgmt,3.0,Monday,16:30,18:00,TBA,hyflex_b,Erik Yu
+SoftEng,3.0,Tuesday,13:30,15:00,Lab 1,f2f,Juan Santos
+OSFundLec,3.0,Tuesday,10:30,12:00,Online,online,Carlos Lim
+CompArch,2.0,Thursday,12:00,13:30,1F,hyflex_a,Maria DelaCruz
+DataCommLec,1.5,Friday,18:00,19:30,1F,online,TBA
+ITProjMgmt,3.0,Saturday,10:30,12:00,TBA,hyflex_b,Erik Yu
