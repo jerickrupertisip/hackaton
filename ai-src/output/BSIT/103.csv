@@ -1,7 +1,7 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
 SoftEng,3.0,Tuesday,18:00,21:00,TBA,f2f,Juan Santos
-OSFundLec,3.0,Tuesday,07:30,10:30,Online,online,Carlos Lim
-CompArch,2.0,Monday,17:30,19:30,TBA,hyflex_a|week1=F2F,Alex Cruz
-CompArch<Lec>,1.0,Monday,13:00,14:00,Online,online,Alex Cruz
-DataCommLec,1.5,Wednesday,07:30,09:00,Online,online,Isabel Flores
-ITProjMgmt,3.0,Wednesday,14:00,17:00,TBA,hyflex_b|week1=Online,Jose Hernandez
+OSFundLec,3.0,Monday,07:30,10:30,Online,online,Carlos Lim
+CompArch,2.0,Wednesday,16:00,18:00,TBA,hyflex_a|week1=F2F,Carlos Lim
+CompArch<Lec>,1.0,Monday,17:30,18:30,Online,online,Carlos Lim
+DataCommLec,1.5,Wednesday,18:00,19:30,Online,online,Isabel Flores
+ITProjMgmt,3.0,Tuesday,13:00,16:00,TBA,hyflex_b|week1=Online,Jose Hernandez

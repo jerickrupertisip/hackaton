@@ -1,8 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-BigData,2.0,Friday,13:00,15:00,TBA,f2f,Juan Santos
-BigData<Lec>,1.0,Wednesday,15:00,16:00,Online,online,Juan Santos
-IoTSystemsLec,3.0,Monday,17:00,20:00,Online,online,Diana Tan
-UXDesign,1.5,Tuesday,17:30,19:00,TBA,hyflex_a|week1=F2F,Ana Villanueva
-DataAnalyticsLec,2.0,Tuesday,14:00,16:00,Online,online,Bianca Reyes
-DataAnalyticsLec<Lec>,1.0,Wednesday,10:30,11:30,Online,online,Bianca Reyes
-ITStrategy,3.0,Monday,14:00,17:00,TBA,hyflex_b|week1=Online,Jose Hernandez
+BigData,2.0,Thursday,19:00,21:00,TBA,f2f,Juan Santos
+BigData<Lec>,1.0,Tuesday,17:00,18:00,Online,online,Juan Santos
+IoTSystemsLec,3.0,Tuesday,07:30,10:30,Online,online,Diana Tan
+UXDesign,1.5,Wednesday,09:00,10:30,TBA,hyflex_a|week1=F2F,Ana Villanueva
+DataAnalyticsLec,2.0,Wednesday,19:00,21:00,Online,online,Bianca Reyes
+DataAnalyticsLec<Lec>,1.0,Monday,10:30,11:30,Online,online,Bianca Reyes
+ITStrategy,3.0,Monday,16:30,19:30,TBA,hyflex_b|week1=Online,Jose Hernandez

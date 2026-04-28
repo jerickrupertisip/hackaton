@@ -1,8 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-SocialEnt,3.0,Wednesday,07:30,10:30,TBA,f2f,Ariel Ramos
-RiskMgmtLec,2.0,Tuesday,17:30,19:30,Online,online,Ariel Ramos
-RiskMgmtLec<Lec>,1.0,Monday,16:00,17:00,Online,online,Ariel Ramos
-EntLeadership,3.0,Monday,13:00,16:00,TBA,hyflex_a|week1=F2F,Ariel Ramos
-DigitalEntLec,1.5,Wednesday,17:30,19:00,Online,online,Bela Reyes
-Negotiation,2.0,Thursday,14:00,16:00,TBA,hyflex_b|week1=Online,Bela Reyes
-Negotiation<Lec>,1.0,Tuesday,13:00,14:00,Online,online,Bela Reyes
+SocialEnt,3.0,Tuesday,14:30,17:30,TBA,f2f,Ariel Ramos
+RiskMgmtLec,2.0,Monday,13:00,15:00,Online,online,Ariel Ramos
+RiskMgmtLec<Lec>,1.0,Monday,09:30,10:30,Online,online,Ariel Ramos
+EntLeadership,3.0,Tuesday,17:30,20:30,TBA,hyflex_a|week1=F2F,Ariel Ramos
+DigitalEntLec,1.5,Wednesday,07:30,09:00,Online,online,Bela Reyes
+Negotiation,2.0,Wednesday,13:00,15:00,TBA,hyflex_b|week1=Online,Bela Reyes
+Negotiation<Lec>,1.0,Thursday,09:30,10:30,Online,online,Bela Reyes
