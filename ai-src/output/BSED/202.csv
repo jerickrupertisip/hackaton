@@ -1,6 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-InclusiveEd,3.0,Monday,9:00,10:30,TBA,f2f,Jude Gomez
-EduLeadershipLec,2.0,Friday,13:30,15:00,Online,online,TBA
-AssessTools,3.0,Tuesday,16:30,18:00,TBA,hyflex_a,Kara Chua
-InstrStratLec,1.5,Thursday,16:30,18:00,Online,online,Kara Chua
-TeachPrac,2.0,Wednesday,7:30,9:00,TBA,hyflex_b,Lara Gomez
+InclusiveEd,3.0,Tuesday,07:30,10:30,TBA,f2f,Jude Gomez
+EduLeadershipLec,2.0,Monday,14:00,16:00,Online,online,Jude Gomez
+EduLeadershipLec<Lec>,1.0,Wednesday,17:00,18:00,Online,online,Jude Gomez
+AssessTools,3.0,Tuesday,13:00,16:00,TBA,hyflex_a|week1=F2F,Kara Chua
+InstrStratLec,1.5,Thursday,13:00,14:30,Online,online,Kara Chua
+TeachPrac,2.0,Wednesday,07:30,09:30,TBA,hyflex_b|week1=Online,Gail Ong
+TeachPrac<Lec>,1.0,Monday,10:30,11:30,Online,online,Lara Gomez

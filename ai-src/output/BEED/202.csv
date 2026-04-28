@@ -1,6 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-EduPsych,3.0,Tuesday,16:30,18:00,TBA,f2f,Lara Gomez
-SpecEdLec,2.0,Thursday,12:00,13:30,Online,online,Julia Santos
-InstrDesign,3.0,Saturday,7:30,9:00,Lab 1,hyflex_a,Gino Ramos
-EduResLec,1.5,Thursday,9:00,10:30,Online,online,Maria DelaCruz
-TeachPrac,2.0,Monday,7:30,9:00,TBA,hyflex_b,Lara Gomez
+EduPsych,3.0,Monday,07:30,10:30,TBA,f2f,Lara Gomez
+SpecEdLec,2.0,Monday,19:00,21:00,Online,online,Faith Lee
+SpecEdLec<Lec>,1.0,Wednesday,09:30,10:30,Online,online,Faith Lee
+InstrDesign,3.0,Thursday,18:00,21:00,TBA,hyflex_a|week1=F2F,Faith Lee
+EduResLec,1.5,Tuesday,07:30,09:00,Online,online,Maria DelaCruz
+TeachPrac,2.0,Tuesday,14:00,16:00,TBA,hyflex_b|week1=Online,Gail Ong
+TeachPrac<Lec>,1.0,Wednesday,14:00,15:00,Online,online,Lara Gomez

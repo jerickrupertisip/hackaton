@@ -1,6 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-PhilEdu,3.0,Wednesday,12:00,13:30,TBA,f2f,Hannah Ong
-CompEdLec,2.0,Friday,15:00,16:30,Lab 2,online,Hugo delaPaz
-InstrTech,3.0,Monday,7:30,9:00,Lab 2,hyflex_a,Ivy Santos
-ClassMgmtLec,1.5,Thursday,16:30,18:00,Online,online,Kurt Chua
-ResMeth,2.0,Tuesday,10:30,12:00,TBA,hyflex_b,Ivy Santos
+PhilEdu,3.0,Monday,18:00,21:00,TBA,f2f,Hugo delaPaz
+CompEdLec,2.0,Wednesday,16:30,18:30,Online,online,Gino Ramos
+CompEdLec<Lec>,1.0,Wednesday,14:30,15:30,Online,online,Hugo delaPaz
+InstrTech,3.0,Tuesday,13:00,16:00,TBA,hyflex_a|week1=F2F,Ivy Santos
+ClassMgmtLec,1.5,Monday,16:30,18:00,Online,online,Kurt Chua
+ResMeth,2.0,Tuesday,16:00,18:00,TBA,hyflex_b|week1=Online,Ivy Santos
+ResMeth<Lec>,1.0,Thursday,13:00,14:00,Online,online,Ivy Santos

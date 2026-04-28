@@ -1,6 +1,8 @@
 subject,unit,day,start_time,end_time,room,modality,teacher
-AdvAcct,3.0,Tuesday,10:30,12:00,TBA,f2f,Miguel Mendoza
-InvestmentsLec,2.0,Tuesday,12:00,13:30,Online,online,Vera Santos
-BusPol,3.0,Thursday,15:00,16:30,TBA,hyflex_a,Vera Santos
-EntreMgmtLec,1.5,Friday,13:30,15:00,Online,online,Wendy Gomez
-LeadDev,2.0,Thursday,9:00,10:30,TBA,hyflex_b,Wendy Gomez
+AdvAcct,3.0,Thursday,15:30,18:30,TBA,f2f,Mr. tanael
+InvestmentsLec,2.0,Tuesday,17:30,19:30,Online,online,Vera Santos
+InvestmentsLec<Lec>,1.0,Monday,10:30,11:30,Online,online,Vera Santos
+BusPol,3.0,Monday,18:00,21:00,TBA,hyflex_a|week1=F2F,Vera Santos
+EntreMgmtLec,1.5,Tuesday,19:30,21:00,Online,online,Wendy Gomez
+LeadDev,2.0,Wednesday,08:30,10:30,TBA,hyflex_b|week1=Online,Wendy Gomez
+LeadDev<Lec>,1.0,Wednesday,13:30,14:30,Online,online,Wendy Gomez
