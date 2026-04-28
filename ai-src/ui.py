@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import csv
@@ -31,7 +32,6 @@ def get_course_schema(course_code):
 
 # --- Helper: Parse options for certain fields (from all courses) ---
 def get_field_options(field):
-    # Aggregate all unique values for a field across all course CSVs
     values = set()
     for code in get_course_codes():
         path = os.path.join(COURSES_DIR, f"{code.lower()}.csv")
@@ -54,17 +54,26 @@ ENROLLMENT_DIR = os.path.join(DATA_DIR, 'enrollment')
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'output')
 
 def get_teachers_schema():
+    if not os.path.exists(TEACHERS_CSV):
+        return ["Teacher", "Expertise", "Availability"]
     with open(TEACHERS_CSV, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
-        return [h.replace('_', ' ').title() for h in next(reader)]
+        try:
+            return [h.replace('_', ' ').title() for h in next(reader)]
+        except StopIteration:
+            return ["Teacher", "Expertise", "Availability"]
 
 def get_rooms_schema():
+    if not os.path.exists(ROOMS_CSV):
+        return ["Room Id", "Category", "Capacity", "Floor"]
     with open(ROOMS_CSV, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
-        return [h.replace('_', ' ').title() for h in next(reader)]
+        try:
+            return [h.replace('_', ' ').title() for h in next(reader)]
+        except StopIteration:
+            return ["Room Id", "Category", "Capacity", "Floor"]
 
 def get_enrollment_schema():
-    # Fixed schema for enrollment CSVs
     return ["Year", "Semester", "Total Students"]
 
 # --- Dynamic schema dictionary ---
@@ -82,7 +91,6 @@ def get_schema(category, course_code=None):
 # --- Dynamic options dictionary (for dropdowns) ---
 def get_options(field, category, course_code=None):
     if category == "Courses" and course_code:
-        # Use field options from all courses for consistency
         return get_field_options(field)
     elif category == "Enrollment" and course_code:
         if field == "year":
@@ -92,7 +100,6 @@ def get_options(field, category, course_code=None):
         else:
             return []
     elif category == "Rooms" and field == "category":
-        # Room category dropdown
         return ["Regular", "Science Lab", "Computer Lab", "Online"]
     return []
 
@@ -103,7 +110,6 @@ def load_output_csv(course_code):
     files = [f for f in os.listdir(course_dir) if f.endswith('.csv')]
     if not files:
         return []
-    # Get headers from first file
     path = os.path.join(course_dir, files[0])
     with open(path, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -116,7 +122,7 @@ def load_output_csv(course_code):
         data = []
         with open(path, newline='', encoding='utf-8') as f:
             reader = csv.reader(f)
-            next(reader)  # skip header
+            next(reader)
             for row in reader:
                 if any(cell.strip() for cell in row):
                     data.append(row)
@@ -161,81 +167,86 @@ def load_from_raw_csv(category, course_code=None):
     with open(path, mode='r', newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
         try:
-            next(reader)  # skip header
-            # Only include rows that have at least one non-empty cell (ignoring pure blank lines)
+            next(reader)
             return [row for row in reader if any(cell.strip() for cell in row)]
         except StopIteration:
             return []
 
+# --- UI scaffolding variables ---
+root = tk.Tk()
+root.title("Academic Scheduler v2.0")
 
-
-
-
-
-
-def select_subjects():
-    all_subjects = sorted(get_field_options("subject"))
-    current_expertise = fields[1][2].get().strip()
-    if current_expertise:
-        pre_selected = [s.strip() for s in current_expertise.split(",")]
-    else:
-        pre_selected = []
-
-    subject_window = tk.Toplevel(root)
-    subject_window.title("Select Subjects")
-    subject_window.grab_set()
-    subject_window.focus()
-    listbox = tk.Listbox(subject_window, selectmode=tk.MULTIPLE, height=10, width=50)
-    for subject in all_subjects:
-        listbox.insert(tk.END, subject)
-        if subject in pre_selected:
-            listbox.selection_set(listbox.size() - 1)
-    listbox.pack(pady=10)
-
-    def ok():
-        selected = [listbox.get(i) for i in listbox.curselection()]
-        if selected:
-            expertise_str = ", ".join(selected)
-            fields[1][2].config(state="normal")
-            fields[1][2].delete(0, tk.END)
-            fields[1][2].insert(0, expertise_str)
-            fields[1][2].config(state="readonly")
-        subject_window.destroy()
-
-    def cancel():
-        subject_window.destroy()
-
-    btn_frame = tk.Frame(subject_window)
-    btn_frame.pack()
-    tk.Button(btn_frame, text="OK", command=ok).pack(side=tk.LEFT, padx=5)
-    tk.Button(btn_frame, text="Cancel", command=cancel).pack(side=tk.LEFT, padx=5)
-
-
-# --- Main Layout ---
 course_codes = get_course_codes()
 default_course = course_codes[0] if course_codes else "BSIT"
 categories = ["Teachers", "Rooms", "Courses", "Enrollment"]
 current_cat = "Teachers"
 current_course = default_course
 
-def get_max_cols():
-    # Find the max number of columns among all schemas
-    max_cols = len(get_teachers_schema())
-    max_cols = max(max_cols, len(get_rooms_schema()))
-    for code in course_codes:
-        max_cols = max(max_cols, len(get_course_schema(code)))
-        max_cols = max(max_cols, len(get_enrollment_schema()))
-    max_cols = max(max_cols, 9)  # For output with Section column
-    return max_cols
+# fields list will hold tuples: (frame, label, entry, combo, chk, chk_var, button)
+fields = []
 
-MAX_COLS = get_max_cols()
-placeholder_headings = [" " * (i + 1) for i in range(MAX_COLS)]
+# Form container created early so helper can use it
+form_frame = None
+form_scroll = None
+form_inner = None
 
-root = tk.Tk()
-root.title("Academic Scheduler v2.0")
-# root.geometry("800x600")  # Remove fixed size to let it auto-size
+# Helper: create form container (called once)
+def create_form_container(parent):
+    global form_frame, form_scroll, form_inner
+    form_frame = tk.LabelFrame(parent, text="Entry Form", padx=10, pady=10)
+    form_frame.pack(fill=tk.BOTH, expand=True, pady=20)
+    form_scroll = tk.Canvas(form_frame)
+    form_scroll.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar = ttk.Scrollbar(form_frame, orient="vertical", command=form_scroll.yview)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    form_scroll.configure(yscrollcommand=scrollbar.set)
+    form_inner = tk.Frame(form_scroll)
+    form_scroll.create_window((0,0), window=form_inner, anchor="nw")
 
-# Tab control
+# Helper: ensure enough field widgets exist
+def ensure_field_widgets(n):
+    # create additional field slots until fields length >= n
+    for i in range(len(fields), n):
+        frame = tk.Frame(form_inner)
+        label = tk.Label(frame, text="", font=("Arial", 10, "bold"))
+        label.pack(side=tk.LEFT, padx=(0,10))
+        entry = tk.Entry(frame, width=44)
+        combo = ttk.Combobox(frame, width=43, state="readonly")
+        chk_var = tk.BooleanVar()
+        chk = tk.Checkbutton(frame, text="Available", variable=chk_var)
+        button = tk.Label(frame, text="")
+        entry.pack_forget()
+        combo.pack_forget()
+        chk.pack_forget()
+        button.pack_forget()
+        frame.pack(pady=(8,2), anchor='w')
+        fields.append((frame, label, entry, combo, chk, chk_var, button))
+
+# Helper: rebuild fields from scratch (safer when schema shrinks/grows)
+def rebuild_fields_for(n):
+    for f, *_ in fields:
+        try:
+            f.destroy()
+        except Exception:
+            pass
+    fields.clear()
+    for i in range(n):
+        frame = tk.Frame(form_inner)
+        label = tk.Label(frame, text="", font=("Arial", 10, "bold"))
+        label.pack(side=tk.LEFT, padx=(0,10))
+        entry = tk.Entry(frame, width=44)
+        combo = ttk.Combobox(frame, width=43, state="readonly")
+        chk_var = tk.BooleanVar()
+        chk = tk.Checkbutton(frame, text="Available", variable=chk_var)
+        button = tk.Label(frame, text="")
+        entry.pack_forget()
+        combo.pack_forget()
+        chk.pack_forget()
+        button.pack_forget()
+        frame.pack(pady=(8,2), anchor='w')
+        fields.append((frame, label, entry, combo, chk, chk_var, button))
+
+# --- Build main layout (tabs, frames) ---
 tab_control = ttk.Notebook(root)
 tab1 = ttk.Frame(tab_control)
 tab2 = ttk.Frame(tab_control)
@@ -243,7 +254,6 @@ tab_control.add(tab1, text="Inputs")
 tab_control.add(tab2, text="Outputs")
 tab_control.pack(expand=1, fill="both")
 
-# Tab 1: Inputs
 title_label = tk.Label(tab1, text="Academic Scheduling System", font=("Arial", 16, "bold"))
 title_label.pack(pady=10)
 
@@ -271,42 +281,14 @@ current_display.pack(pady=5, anchor='center')
 # Table
 table_frame = tk.Frame(tab1)
 table_frame.pack(pady=10, fill=tk.BOTH, expand=True)
-table = ttk.Treeview(table_frame, columns=placeholder_headings, show="headings", height=10)
+table = ttk.Treeview(table_frame, show="headings", height=10)
 table.pack(fill=tk.BOTH, expand=True)
 
-# Form Frame
-form_frame = tk.LabelFrame(tab1, text="Entry Form", padx=10, pady=10)
-form_frame.pack(fill=tk.BOTH, expand=True, pady=20)
+# Create form container now
+create_form_container(tab1)
 
-form_scroll = tk.Canvas(form_frame)  # Remove fixed height to allow expansion
-form_scroll.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-scrollbar = ttk.Scrollbar(form_frame, orient="vertical", command=form_scroll.yview)
-scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-form_scroll.configure(yscrollcommand=scrollbar.set)
-
-form_inner = tk.Frame(form_scroll)
-form_scroll.create_window((0,0), window=form_inner, anchor="nw")
-
-fields = []
-for i in range(MAX_COLS):
-    frame = tk.Frame(form_inner)
-    label = tk.Label(frame, text="", font=("Arial", 10, "bold"))
-    label.pack(side=tk.LEFT, padx=(0,10))
-    entry = tk.Entry(frame, width=44)
-    combo = ttk.Combobox(frame, width=43, state="readonly")
-    chk_var = tk.BooleanVar()
-    chk = tk.Checkbutton(frame, text="Available", variable=chk_var)
-    # Only show Select Subjects button for Teachers Expertise field
-    if i == 1:
-        button = tk.Button(frame, text="Select Subjects", command=select_subjects)
-    else:
-        button = tk.Label(frame, text="")  # Placeholder, invisible
-    entry.pack_forget()
-    combo.pack_forget()
-    chk.pack_forget()
-    button.pack_forget()
-    frame.pack(pady=(8,2), anchor='w')
-    fields.append((frame, label, entry, combo, chk, chk_var, button))
+# Create minimal initial fields (will be expanded in refresh_ui)
+ensure_field_widgets(6)
 
 # Buttons
 button_frame2 = tk.Frame(tab1)
@@ -349,111 +331,202 @@ output_notebook.pack(fill=tk.BOTH, expand=True)
 # --- Edit Mode State ---
 edit_mode = False
 selected_index = None
+# --- Subject selector uses fields list; robust to index changes ---
+def select_subjects():
+    all_subjects = sorted(get_field_options("subject"))
+    expertise_index = None
+    for idx, (_, label_widget, _, _, _, _, _) in enumerate(fields):
+        if label_widget.cget("text").lower() in ["expertise", "expertises"]:
+            expertise_index = idx
+            break
+    current_expertise = ""
+    if expertise_index is not None:
+        try:
+            current_expertise = fields[expertise_index][2].get().strip()
+        except Exception:
+            current_expertise = ""
+    pre_selected = [s.strip() for s in current_expertise.split(",")] if current_expertise else []
+
+    subject_window = tk.Toplevel(root)
+    subject_window.title("Select Subjects")
+    subject_window.grab_set()
+    subject_window.focus()
+    listbox = tk.Listbox(subject_window, selectmode=tk.MULTIPLE, height=10, width=50)
+    for subject in all_subjects:
+        listbox.insert(tk.END, subject)
+        if subject in pre_selected:
+            listbox.selection_set(listbox.size() - 1)
+    listbox.pack(pady=10)
+
+    def ok():
+        selected = [listbox.get(i) for i in listbox.curselection()]
+        if selected and expertise_index is not None:
+            expertise_str = ", ".join(selected)
+            fields[expertise_index][2].config(state="normal")
+            fields[expertise_index][2].delete(0, tk.END)
+            fields[expertise_index][2].insert(0, expertise_str)
+            fields[expertise_index][2].config(state="readonly")
+        subject_window.destroy()
+
+    def cancel():
+        subject_window.destroy()
+
+    btn_frame = tk.Frame(subject_window)
+    btn_frame.pack()
+    tk.Button(btn_frame, text="OK", command=ok).pack(side=tk.LEFT, padx=5)
+    tk.Button(btn_frame, text="Cancel", command=cancel).pack(side=tk.LEFT, padx=5)
 
 def refresh_ui():
+    global fields
     current_display.config(text=f"Currently Editing: {current_cat} ({current_course})" if current_cat in ["Courses", "Enrollment"] else f"Currently Editing: {current_cat}")
     course_select.config(state="disabled" if edit_mode else "readonly")
     course_select.pack_forget() if not (current_cat in ["Courses", "Enrollment"]) else course_select.pack(side=tk.LEFT, padx=5)
 
-    # --- Update table headings and data ---
     if current_cat in ["Courses", "Enrollment"]:
         current_headings = get_schema(current_cat, current_course)
         data = raw_data_storage[current_cat].get(current_course, [])
     else:
         current_headings = get_schema(current_cat)
         data = raw_data_storage[current_cat]
+
     num_cols = len(current_headings)
+    desired_fields = max(num_cols, 6)
+
+    # Rebuild fields to match desired_fields exactly (avoids stale widgets)
+    rebuild_fields_for(desired_fields)
 
     # Clear table
     for item in table.get_children():
         table.delete(item)
+
     # Set columns dynamically
-    table['columns'] = current_headings
-    # Set headings
-    for i, heading in enumerate(current_headings):
-        table.heading(i, text=heading)
-        table.column(i, width=120, minwidth=40)
+    if current_headings:
+        table['columns'] = current_headings
+        for h in current_headings:
+            table.heading(h, text=h)
+            table.column(h, width=120, minwidth=40)
+    else:
+        placeholder = [f"Col{i}" for i in range(1, desired_fields+1)]
+        table['columns'] = placeholder
+        for h in placeholder:
+            table.heading(h, text=h)
+            table.column(h, width=120, minwidth=40)
 
     # Insert data
     for row in data:
-        padded_row = list(row) + [""] * (MAX_COLS - len(row))
+        padded_row = list(row) + [""] * (max(0, desired_fields - len(row)))
         table.insert("", tk.END, values=padded_row)
 
-    # --- Reset form scroll ---
+    # Reset form scroll
     form_scroll.yview_moveto(0)
 
-    # --- Show/hide field slots ---
-    for i in range(MAX_COLS):
-        if i < len(current_headings):
+    # Show/hide field slots and set labels/options
+    for i in range(len(fields)):
+        frame, label_widget, entry, combo, chk, chk_var, button = fields[i]
+        if i < num_cols:
             label_text = current_headings[i]
-            fields[i][1].config(text=label_text)
+            label_widget.config(text=label_text)
             opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
             if opts:
-                fields[i][2].pack_forget()
-                fields[i][3].config(values=opts)
-                fields[i][3].set(opts[0])
-                fields[i][3].pack(side=tk.LEFT)
-                fields[i][4].pack_forget()
-                fields[i][6].pack_forget()
-            elif current_cat == "Teachers" and i == 2:  # Availability checkbox
-                fields[i][2].pack_forget()
-                fields[i][3].pack_forget()
-                fields[i][4].pack(side=tk.LEFT)
-                fields[i][6].pack_forget()
+                entry.pack_forget()
+                combo.config(values=opts)
+                combo.set(opts[0] if opts else "")
+                combo.pack(side=tk.LEFT)
+                chk.pack_forget()
+                # ensure button placeholder removed
+                try:
+                    button.destroy()
+                except Exception:
+                    pass
+                placeholder_btn = tk.Label(frame, text="")
+                placeholder_btn.pack_forget()
+                fields[i] = (frame, label_widget, entry, combo, chk, chk_var, placeholder_btn)
+            elif current_cat == "Teachers" and label_text.lower() in ["availability", "available"]:
+                entry.pack_forget()
+                combo.pack_forget()
+                chk.pack(side=tk.LEFT)
+                try:
+                    button.destroy()
+                except Exception:
+                    pass
+                placeholder_btn = tk.Label(frame, text="")
+                placeholder_btn.pack_forget()
+                fields[i] = (frame, label_widget, entry, combo, chk, chk_var, placeholder_btn)
             else:
-                readonly = (current_cat == "Teachers" and i == 1)  # Expertise field
-                fields[i][2].config(state="readonly" if readonly else "normal")
-                fields[i][2].pack(side=tk.LEFT)
-                fields[i][3].pack_forget()
-                fields[i][4].pack_forget()
+                readonly = (current_cat == "Teachers" and label_text.lower() in ["expertise", "expertises"])
+                entry.config(state="readonly" if readonly else "normal")
+                entry.pack(side=tk.LEFT)
+                combo.pack_forget()
+                chk.pack_forget()
                 # Show Select Subjects button only for Teachers Expertise field
-                if current_cat == "Teachers" and i == 1:
-                    fields[i][6].pack(side=tk.LEFT, padx=5)
+                if current_cat == "Teachers" and label_text.lower() in ["expertise", "expertises"]:
+                    try:
+                        button.destroy()
+                    except Exception:
+                        pass
+                    btn = tk.Button(frame, text="Select Subjects", command=select_subjects)
+                    btn.pack(side=tk.LEFT, padx=5)
+                    fields[i] = (frame, label_widget, entry, combo, chk, chk_var, btn)
                 else:
-                    fields[i][6].pack_forget()
+                    try:
+                        button.destroy()
+                    except Exception:
+                        pass
+                    placeholder_btn = tk.Label(frame, text="")
+                    placeholder_btn.pack_forget()
+                    fields[i] = (frame, label_widget, entry, combo, chk, chk_var, placeholder_btn)
         else:
             fields[i][0].pack_forget()
 
-    # --- Update button visibility ---
-    add_btn.pack_forget() if edit_mode else add_btn.pack(side=tk.LEFT, padx=5)
-    edit_btn.pack_forget() if edit_mode else edit_btn.pack(side=tk.LEFT, padx=5)
-    remove_btn.pack_forget() if edit_mode else remove_btn.pack(side=tk.LEFT, padx=5)
-    cancel_btn.pack_forget() if not edit_mode else cancel_btn.pack(side=tk.LEFT, padx=5)
-    confirm_btn.pack_forget() if not edit_mode else confirm_btn.pack(side=tk.LEFT, padx=5)
-    save_csv_btn.pack_forget() if edit_mode else save_csv_btn.pack(side=tk.LEFT, padx=5)
+    # Update button visibility
+    if edit_mode:
+        add_btn.pack_forget()
+        edit_btn.pack_forget()
+        remove_btn.pack_forget()
+        cancel_btn.pack(side=tk.LEFT, padx=5)
+        confirm_btn.pack(side=tk.LEFT, padx=5)
+        save_csv_btn.pack_forget()
+    else:
+        add_btn.pack(side=tk.LEFT, padx=5)
+        edit_btn.pack(side=tk.LEFT, padx=5)
+        remove_btn.pack(side=tk.LEFT, padx=5)
+        cancel_btn.pack_forget()
+        confirm_btn.pack_forget()
+        save_csv_btn.pack(side=tk.LEFT, padx=5)
 
-    # --- Populate form if in edit mode ---
-    if edit_mode and selected_index is not None and selected_index < len(data):
-        row = data[selected_index]
-        for i in range(len(current_headings)):
-            label_text = current_headings[i]
-            opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
-            if opts:
-                fields[i][3].set(row[i])
-            elif current_cat == "Teachers" and i == 2:
-                fields[i][5].set(row[i] == '1')
-            else:
-                if current_cat == "Teachers" and i == 1:
-                    fields[i][2].config(state="normal")
-                    fields[i][2].delete(0, tk.END)
-                    fields[i][2].insert(0, row[i])
-                    fields[i][2].config(state="readonly")
+    # Populate form if in edit mode
+    if edit_mode and selected_index is not None:
+        if selected_index < len(data):
+            row = data[selected_index]
+            for i in range(len(current_headings)):
+                label_text = current_headings[i]
+                opts = get_options(label_text.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
+                if opts:
+                    fields[i][3].set(row[i] if i < len(row) else opts[0])
+                elif current_cat == "Teachers" and label_text.lower() in ["availability", "available"]:
+                    fields[i][5].set(row[i] == '1' if i < len(row) else False)
                 else:
-                    fields[i][2].delete(0, tk.END)
-                    fields[i][2].insert(0, row[i])
+                    if current_cat == "Teachers" and label_text.lower() in ["expertise", "expertises"]:
+                        fields[i][2].config(state="normal")
+                        fields[i][2].delete(0, tk.END)
+                        fields[i][2].insert(0, row[i] if i < len(row) else "")
+                        fields[i][2].config(state="readonly")
+                    else:
+                        fields[i][2].delete(0, tk.END)
+                        fields[i][2].insert(0, row[i] if i < len(row) else "")
 
     # Update scroll region
     form_inner.update_idletasks()
     form_scroll.config(scrollregion=form_scroll.bbox("all"))
 
 # --- Initial Data Load ---
-
 raw_data_storage["Teachers"] = load_from_raw_csv("Teachers")
 raw_data_storage["Rooms"] = load_from_raw_csv("Rooms")
 raw_data_storage["Courses"] = {code: load_from_raw_csv("Courses", code) for code in course_codes}
 raw_data_storage["Enrollment"] = {code: load_from_raw_csv("Enrollment", code) for code in course_codes}
 
 refresh_ui()
+
 
 # --- Event Handlers ---
 def manage_teachers():
@@ -510,7 +583,7 @@ def add_record():
         opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
         if opts:
             val = fields[i][3].get()
-        elif current_cat == "Teachers" and i == 2:
+        elif current_cat == "Teachers" and label.lower() in ["availability", "available"]:
             val = '1' if fields[i][5].get() else '0'
         else:
             val = fields[i][2].get()
@@ -522,8 +595,7 @@ def add_record():
         else:
             raw_data_storage[current_cat].append(row_data)
         refresh_ui()
-        # Clear plain text inputs
-        for i in range(MAX_COLS):
+        for i in range(len(fields)):
             if fields[i][2].winfo_ismapped():
                 fields[i][2].delete(0, tk.END)
     else:
@@ -544,7 +616,7 @@ def remove_selected():
     if selected:
         indices = sorted([table.index(item) for item in selected], reverse=True)
         if current_cat in ["Courses", "Enrollment"]:
-            data_list = raw_data_storage[current_cat][current_course]
+            data_list = raw_data_storage[current_cat].get(current_course, [])
             for idx in indices:
                 if idx < len(data_list):
                     data_list.pop(idx)
@@ -573,7 +645,7 @@ def confirm_edit():
         opts = get_options(label.replace(' ', '_').lower(), current_cat, current_course if current_cat in ["Courses", "Enrollment"] else None)
         if opts:
             val = fields[i][3].get()
-        elif current_cat == "Teachers" and i == 2:
+        elif current_cat == "Teachers" and label.lower() in ["availability", "available"]:
             val = '1' if fields[i][5].get() else '0'
         else:
             val = fields[i][2].get()
@@ -584,7 +656,6 @@ def confirm_edit():
             raw_data_storage[current_cat][current_course][selected_index] = row_data
         else:
             raw_data_storage[current_cat][selected_index] = row_data
-        # Save to CSV
         if current_cat in ["Courses", "Enrollment"]:
             save_to_raw_csv(current_cat, raw_data_storage[current_cat].get(current_course, []), current_course)
             messagebox.showinfo("Saved", f"{current_course} {current_cat.lower()} data saved.")
@@ -610,33 +681,32 @@ def save_to_csv():
 def output_course_changed(event):
     selected_course = output_course_select.get()
     sections_data = load_output_csv(selected_course)
-    # Clear previous tabs
     for tab_id in output_notebook.tabs():
         output_notebook.forget(tab_id)
     for section, headers, data in sections_data:
         frame = ttk.Frame(output_notebook)
-        table = ttk.Treeview(frame, columns=headers, show="headings", height=15)
+        table_out = ttk.Treeview(frame, columns=headers, show="headings", height=15)
         for i, h in enumerate(headers):
-            table.heading(i, text=h)
-            table.column(i, width=120, minwidth=40)
+            table_out.heading(h, text=h)
+            table_out.column(h, width=120, minwidth=40)
         for row in data:
-            table.insert("", tk.END, values=row)
-        table.pack(fill=tk.BOTH, expand=True)
+            table_out.insert("", tk.END, values=row)
+        table_out.pack(fill=tk.BOTH, expand=True)
         output_notebook.add(frame, text=section)
 
 def run_scheduler():
-    messagebox.showinfo("Success", "Scheduling complete! Results are now displayed in the Outputs tab.")
     generate_schedules()
-    output_course_changed(None)  # Refresh output data
-    tab_control.select(1)  # Switch to Output tab
+    output_course_changed(None)
+    messagebox.showinfo("Success", "Scheduling complete! Results are now displayed in the Outputs tab.")
+    tab_control.select(1)
 
-output_course_changed(None)  # Load initial output data
+output_course_changed(None)
 
 def exit_app():
     root.quit()
 
 def on_tab_changed(event):
-    if tab_control.index(tab_control.select()) == 1:  # Output tab
+    if tab_control.index(tab_control.select()) == 1:
         output_course_changed(None)
 
 # Bind events
